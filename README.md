@@ -1,3 +1,6 @@
+![图片描述（可留空）](https://github.com/hello432369/just-a-note/blob/main/%E6%88%AA%E5%B1%8F2026-01-30%2008.39.26.png?raw=true)
+
+
 # 分镜式编辑器
 
 ## 项目简介
