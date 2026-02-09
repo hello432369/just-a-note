@@ -1009,168 +1009,16 @@ const MusicSystem = {
         this.setupGlobalDragEvents();
     },
     
-    // 保存到本地存储
+    // 禁用保存到本地存储，避免卡顿
     saveToLocalStorage() {
-        // 避免频繁保存，使用防抖
-        if (this.saveTimeout) {
-            clearTimeout(this.saveTimeout);
-        }
-        
-        this.saveTimeout = setTimeout(() => {
-            console.log('MusicSystem: 保存到本地存储');
-            
-            try {
-                // 检查音频播放器列表
-                if (this.audioPlayers.length === 0) {
-                    console.log('MusicSystem: 没有音频播放器需要保存');
-                    return;
-                }
-                
-                console.log('MusicSystem: 音频播放器数量:', this.audioPlayers.length);
-                
-                // 保存音频播放器
-                const audioPlayersData = this.audioPlayers.map(player => {
-                    // 确保获取有效的位置值
-                    const left = player.element.style.left || '0px';
-                    const top = player.element.style.top || '0px';
-                    return {
-                        id: player.id,
-                        audioUrl: player.audio.src,
-                        x: parseInt(left) || 0,
-                        y: parseInt(top) || 0,
-                        currentTime: player.currentTime,
-                        isPlaying: player.isPlaying,
-                        backgroundColor: player.element.style.backgroundColor || this.getRandomColor()
-                    };
-                });
-                
-                // 保存音乐列表
-                const musicListData = this.musicListNodes.map(node => ({
-                    id: node.id,
-                    x: parseInt(node.element.style.left) || 0,
-                    y: parseInt(node.element.style.top) || 0,
-                    audioFiles: node.audioFiles.map(file => ({
-                        name: file.name,
-                        lastModified: file.lastModified,
-                        size: file.size,
-                        type: file.type
-                    })),
-                    currentIndex: node.currentIndex,
-                    playbackMode: node.playbackMode,
-                    currentTime: node.currentTime
-                }));
-                
-                // 检查本地存储大小
-                const audioPlayersString = JSON.stringify(audioPlayersData);
-                const musicListString = JSON.stringify(musicListData);
-                const totalSize = audioPlayersString.length + musicListString.length;
-                
-                console.log('MusicSystem: 音频播放器数据大小:', audioPlayersString.length, '字节');
-                console.log('MusicSystem: 音乐列表数据大小:', musicListString.length, '字节');
-                console.log('MusicSystem: 总数据大小:', totalSize, '字节');
-                
-                // 检查是否超过本地存储限制（约5MB）
-                if (totalSize > 5 * 1024 * 1024) {
-                    console.warn('MusicSystem: 本地存储数据超过5MB限制，可能无法保存');
-                    // 只保存最近的几个播放器
-                    const trimmedPlayers = audioPlayersData.slice(-5); // 只保存最近的5个
-                    localStorage.setItem('musicSystemAudioPlayers', JSON.stringify(trimmedPlayers));
-                } else {
-                    localStorage.setItem('musicSystemAudioPlayers', audioPlayersString);
-                    localStorage.setItem('musicSystemMusicLists', musicListString);
-                }
-                
-                console.log('MusicSystem: 保存成功');
-                
-                // 验证保存
-                const savedData = localStorage.getItem('musicSystemAudioPlayers');
-                console.log('MusicSystem: 保存后验证:', savedData ? '成功' : '失败');
-                if (savedData) {
-                    const parsedData = JSON.parse(savedData);
-                    console.log('MusicSystem: 保存后播放器数量:', parsedData.length);
-                }
-            } catch (error) {
-                console.error('MusicSystem: 保存到本地存储失败:', error);
-                console.error('MusicSystem: 错误详情:', error.message);
-            }
-        }, 100); // 100ms防抖
+        console.log('MusicSystem: 保存功能已禁用');
     },
     
-    // 从本地存储加载
+    // 禁用从本地存储加载，避免卡顿和错误
     loadFromLocalStorage() {
-        console.log('MusicSystem: 从本地存储加载');
-        
-        try {
-            // 清空现有播放器，避免重复
-            this.clearAllPlayers();
-            
-            // 检查本地存储是否有数据
-            const audioPlayersData = localStorage.getItem('musicSystemAudioPlayers');
-            console.log('MusicSystem: 本地存储状态 - 音频播放器:', audioPlayersData ? '存在' : '不存在');
-            
-            // 加载音频播放器
-            if (audioPlayersData) {
-                console.log('MusicSystem: 找到音频播放器数据，长度:', audioPlayersData.length, '字节');
-                try {
-                    const players = JSON.parse(audioPlayersData);
-                    console.log('MusicSystem: 解析出音频播放器数量:', players.length);
-                    
-                    if (players.length === 0) {
-                        console.log('MusicSystem: 没有音频播放器数据');
-                        return;
-                    }
-                    
-                    // 批量创建DOM元素，减少重排
-                    const fragment = document.createDocumentFragment();
-                    const nodesLayer = document.getElementById('nodes-layer');
-                    const container = nodesLayer || document.body;
-                    
-                    players.forEach((playerData, index) => {
-                        console.log('MusicSystem: 加载播放器', index + 1, ':', playerData.id, '位置:', playerData.x, playerData.y);
-                        this.restoreAudioPlayer(playerData, fragment);
-                    });
-                    
-                    // 一次性添加到DOM
-                    if (fragment.childNodes.length > 0) {
-                        container.appendChild(fragment);
-                    }
-                    
-                } catch (parseError) {
-                    console.error('MusicSystem: 解析音频播放器数据失败:', parseError);
-                    // 清除损坏的数据
-                    localStorage.removeItem('musicSystemAudioPlayers');
-                    console.log('MusicSystem: 已清除损坏的音频播放器数据');
-                }
-            } else {
-                console.log('MusicSystem: 本地存储中没有音频播放器数据');
-            }
-            
-            // 加载音乐列表
-            const musicListData = localStorage.getItem('musicSystemMusicLists');
-            if (musicListData) {
-                console.log('MusicSystem: 找到音乐列表数据，长度:', musicListData.length, '字节');
-                try {
-                    const lists = JSON.parse(musicListData);
-                    console.log('MusicSystem: 解析出音乐列表数量:', lists.length);
-                    lists.forEach((listData, index) => {
-                        console.log('MusicSystem: 加载音乐列表', index + 1, ':', listData.id);
-                        this.restoreMusicList(listData);
-                    });
-                } catch (parseError) {
-                    console.error('MusicSystem: 解析音乐列表数据失败:', parseError);
-                    // 清除损坏的数据
-                    localStorage.removeItem('musicSystemMusicLists');
-                    console.log('MusicSystem: 已清除损坏的音乐列表数据');
-                }
-            } else {
-                console.log('MusicSystem: 本地存储中没有音乐列表数据');
-            }
-            
-            console.log('MusicSystem: 加载完成，当前音频播放器数量:', this.audioPlayers.length);
-        } catch (error) {
-            console.error('MusicSystem: 从本地存储加载失败:', error);
-            console.error('MusicSystem: 错误详情:', error.message);
-        }
+        console.log('MusicSystem: 加载功能已禁用');
+        // 清空现有播放器，避免重复
+        this.clearAllPlayers();
     },
     
     // 清空所有播放器
@@ -1266,10 +1114,8 @@ const MusicSystem = {
             
             audioElement.addEventListener('timeupdate', () => {
                 playerInfo.currentTime = audioElement.currentTime;
-                // 定期保存 - 减少频率，避免性能问题
-                if (Math.random() < 0.01) { // 1% 的概率保存
-                    this.saveToLocalStorage();
-                }
+                // 禁用实时保存，避免卡顿
+                // 只在必要时（如拖拽结束、播放状态改变）进行保存
             });
             
             // 拖拽功能 - 参考script.js中的节点拖拽实现
@@ -1299,9 +1145,13 @@ const MusicSystem = {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // 计算移动距离
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
+                    // 获取当前缩放比例（从app实例获取）
+                    const zoom = window.app ? window.app.zoom : 1;
+                    
+                    // 使用movementX/movementY获取更准确的鼠标移动距离
+                    // 考虑缩放比例，将屏幕移动距离转换为世界坐标
+                    const deltaX = e.movementX / zoom;
+                    const deltaY = e.movementY / zoom;
                     
                     // 获取当前位置
                     const currentX = parseInt(playButton.style.left || 0);
@@ -1314,10 +1164,6 @@ const MusicSystem = {
                     // 更新位置
                     playButton.style.left = newX + 'px';
                     playButton.style.top = newY + 'px';
-                    
-                    // 更新起始位置
-                    startX = e.clientX;
-                    startY = e.clientY;
                     
                     console.log('MusicSystem: 移动到位置:', newX, newY);
                 }
@@ -1332,9 +1178,9 @@ const MusicSystem = {
                     // 恢复鼠标样式
                     document.body.style.cursor = '';
                     
-                    // 保存新位置到本地存储
-                    this.saveToLocalStorage();
-                    console.log('MusicSystem: 结束拖拽，保存位置');
+                    // 禁用保存，避免卡顿
+                    console.log('MusicSystem: 结束拖拽');
+                    // 位置信息会在导出时保存
                 }
             };
             
@@ -2161,135 +2007,16 @@ const VideoSystem = {
         this.setupGlobalDragEvents();
     },
     
-    // 保存到本地存储
+    // 禁用保存到本地存储，避免卡顿
     saveToLocalStorage() {
-        // 避免频繁保存，使用防抖
-        if (this.saveTimeout) {
-            clearTimeout(this.saveTimeout);
-        }
-        
-        this.saveTimeout = setTimeout(() => {
-            console.log('VideoSystem: 保存到本地存储');
-            
-            try {
-                // 检查视频播放器列表
-                if (this.videoPlayers.length === 0) {
-                    console.log('VideoSystem: 没有视频播放器需要保存');
-                    return;
-                }
-                
-                console.log('VideoSystem: 视频播放器数量:', this.videoPlayers.length);
-                
-                // 保存视频播放器
-                const videoPlayersData = this.videoPlayers.map(player => {
-                    // 确保获取有效的位置值
-                    const left = player.element.style.left || '0px';
-                    const top = player.element.style.top || '0px';
-                    return {
-                        id: player.id,
-                        videoUrl: player.video.src,
-                        x: parseInt(left) || 0,
-                        y: parseInt(top) || 0,
-                        currentTime: player.currentTime,
-                        isPlaying: player.isPlaying,
-                        backgroundColor: player.element.style.backgroundColor || this.getRandomColor()
-                    };
-                });
-                
-                // 检查本地存储大小
-                const videoPlayersString = JSON.stringify(videoPlayersData);
-                const totalSize = videoPlayersString.length;
-                
-                console.log('VideoSystem: 视频播放器数据大小:', totalSize, '字节');
-                
-                // 检查是否超过本地存储限制（约5MB）
-                if (totalSize > 5 * 1024 * 1024) {
-                    console.warn('VideoSystem: 本地存储数据超过5MB限制，可能无法保存');
-                    // 只保存最近的几个播放器
-                    const trimmedPlayers = videoPlayersData.slice(-5); // 只保存最近的5个
-                    localStorage.setItem('videoSystemVideoPlayers', JSON.stringify(trimmedPlayers));
-                } else {
-                    localStorage.setItem('videoSystemVideoPlayers', videoPlayersString);
-                }
-                
-                console.log('VideoSystem: 保存成功');
-                
-            } catch (error) {
-                console.error('VideoSystem: 保存到本地存储失败:', error);
-                console.error('VideoSystem: 错误详情:', error.message);
-            }
-        }, 100); // 100ms防抖
+        console.log('VideoSystem: 保存功能已禁用');
     },
     
-    // 从本地存储加载
+    // 禁用从本地存储加载，避免卡顿和错误
     loadFromLocalStorage() {
-        console.log('VideoSystem: 从本地存储加载');
-        
-        try {
-            // 加载allowMultiplePlayback设置
-            const savedAllowMultiple = localStorage.getItem('videoSystemAllowMultiple');
-            if (savedAllowMultiple !== null) {
-                this.allowMultiplePlayback = JSON.parse(savedAllowMultiple);
-                console.log('VideoSystem: 加载allowMultiplePlayback设置:', this.allowMultiplePlayback);
-            }
-            
-            // 清空现有播放器，避免重复
-            this.clearAllPlayers();
-            
-            // 检查本地存储是否有数据
-            const videoPlayersData = localStorage.getItem('videoSystemVideoPlayers');
-            console.log('VideoSystem: 本地存储状态 - 视频播放器:', videoPlayersData ? '存在' : '不存在');
-            
-            // 加载视频播放器
-            if (videoPlayersData) {
-                console.log('VideoSystem: 找到视频播放器数据，长度:', videoPlayersData.length, '字节');
-                try {
-                    const players = JSON.parse(videoPlayersData);
-                    console.log('VideoSystem: 解析出视频播放器数量:', players.length);
-                    
-                    if (players.length === 0) {
-                        console.log('VideoSystem: 没有视频播放器数据');
-                        return;
-                    }
-                    
-                    // 批量创建DOM元素，减少重排
-                    const fragment = document.createDocumentFragment();
-                    const nodesLayer = document.getElementById('nodes-layer');
-                    const container = nodesLayer || document.body;
-                    
-                    players.forEach((playerData, index) => {
-                        console.log('VideoSystem: 加载播放器', index + 1, ':', playerData.id, '位置:', playerData.x, playerData.y);
-                        this.restoreVideoPlayer(playerData, fragment);
-                    });
-                    
-                    // 一次性添加到DOM
-                    if (fragment.childNodes.length > 0) {
-                        container.appendChild(fragment);
-                    }
-                    
-                } catch (parseError) {
-                    console.error('VideoSystem: 解析视频播放器数据失败:', parseError);
-                    // 清除损坏的数据
-                    localStorage.removeItem('videoSystemVideoPlayers');
-                    console.log('VideoSystem: 已清除损坏的视频播放器数据');
-                }
-            } else {
-                console.log('VideoSystem: 本地存储中没有视频播放器数据');
-            }
-            
-            console.log('VideoSystem: 加载完成，当前视频播放器数量:', this.videoPlayers.length);
-            
-            // 根据多视频播放状态设置视频静音状态
-            if (this.allowMultiplePlayback) {
-                this.videoPlayers.forEach(p => {
-                    p.video.muted = true;
-                });
-                console.log('VideoSystem: 多视频播放已开启，已设置所有视频为静音');
-            }
-        } catch (error) {
-            console.error('VideoSystem: 从本地存储加载失败:', error);
-            console.error('VideoSystem: 错误详情:', error.message);
-        }
+        console.log('VideoSystem: 加载功能已禁用');
+        // 清空现有播放器，避免重复
+        this.clearAllPlayers();
     },
     
     // 切换允许多个视频同时播放的状态
@@ -2453,21 +2180,35 @@ const VideoSystem = {
             
             document.addEventListener('mousemove', (e) => {
                 if (isDragging) {
-                    const dx = e.clientX - startX;
-                    const dy = e.clientY - startY;
-                    
                     // 考虑缩放和平移
                     const container = document.getElementById('container');
                     if (container && window.app) {
-                        // 鼠标移动的距离已经是相对于容器的，只需要考虑缩放因子
-                        const worldX = dx / app.zoom;
-                        const worldY = dy / app.zoom;
+                        // 使用movementX/movementY获取更准确的鼠标移动距离
+                        // 考虑缩放比例，将屏幕移动距离转换为世界坐标
+                        const worldX = e.movementX / app.zoom;
+                        const worldY = e.movementY / app.zoom;
                         
-                        videoContainer.style.left = (startLeft + worldX) + 'px';
-                        videoContainer.style.top = (startTop + worldY) + 'px';
+                        // 获取当前位置
+                        const currentX = parseInt(videoContainer.style.left || 0);
+                        const currentY = parseInt(videoContainer.style.top || 0);
+                        
+                        // 计算新位置
+                        const newX = currentX + worldX;
+                        const newY = currentY + worldY;
+                        
+                        videoContainer.style.left = newX + 'px';
+                        videoContainer.style.top = newY + 'px';
                     } else {
-                        videoContainer.style.left = (startLeft + dx) + 'px';
-                        videoContainer.style.top = (startTop + dy) + 'px';
+                        // 获取当前位置
+                        const currentX = parseInt(videoContainer.style.left || 0);
+                        const currentY = parseInt(videoContainer.style.top || 0);
+                        
+                        // 计算新位置
+                        const newX = currentX + e.movementX;
+                        const newY = currentY + e.movementY;
+                        
+                        videoContainer.style.left = newX + 'px';
+                        videoContainer.style.top = newY + 'px';
                     }
                 }
             });
@@ -2476,8 +2217,8 @@ const VideoSystem = {
                 if (isDragging) {
                     isDragging = false;
                     videoContainer.style.zIndex = '1000'; // 恢复正常层级
-                    // 保存状态
-                    this.saveToLocalStorage();
+                    // 禁用保存，避免卡顿
+                    // 位置信息会在导出时保存
                 }
             });
             
@@ -2516,18 +2257,15 @@ const VideoSystem = {
             // 视频事件
             videoElement.addEventListener('timeupdate', () => {
                 playerInfo.currentTime = videoElement.currentTime;
-                // 定期保存 - 减少频率，避免性能问题
-                if (Math.random() < 0.01) { // 1% 的概率保存
-                    this.saveToLocalStorage();
-                }
+                // 禁用实时保存，避免卡顿
+                // 只在必要时（如拖拽结束、播放状态改变）进行保存
             });
             
             // 监听视频结束事件
             videoElement.addEventListener('ended', () => {
                 playerInfo.isPlaying = false;
                 console.log(`VideoSystem: 视频播放结束 - ${playerId}`);
-                // 保存状态
-                this.saveToLocalStorage();
+                // 禁用保存，避免卡顿
             });
             
             // 右键删除功能
@@ -2812,9 +2550,11 @@ const VideoSystem = {
             // 视频事件
             videoElement.addEventListener('timeupdate', () => {
                 playerInfo.currentTime = videoElement.currentTime;
-                // 定期保存 - 减少频率，避免性能问题
-                if (Math.random() < 0.01) { // 1% 的概率保存
-                    this.saveToLocalStorage();
+                // 定期保存 - 进一步减少频率，避免性能问题
+                if (Math.random() < 0.001) { // 0.1% 的概率保存
+                    if (window.StorageSystem) {
+                        window.StorageSystem.save();
+                    }
                 }
             });
             
@@ -3167,10 +2907,18 @@ const app = {
         FXManager.init(this);  // 正确：FXManager 和 init
 
         // 初始化存储系统
-        StorageSystem.init(this, DrawingManager, window.imageHandler);
-
-        // 加载保存的状态
-        StorageSystem.load();
+        StorageSystem.init(this, DrawingManager, window.imageHandler).then(() => {
+            // 加载保存的状态
+            StorageSystem.load().then(success => {
+                if (success) {
+                    console.log('加载保存的状态成功');
+                } else {
+                    console.log('没有找到保存的状态');
+                }
+            }).catch(error => {
+                console.error('加载状态失败:', error);
+            });
+        });
 
         this.setupEvents();
         this.updateMinimap();
@@ -4824,7 +4572,9 @@ const app = {
     //---------------------------
     // 保存状态（调用存储系统）
     save() {
-        StorageSystem.save();
+        StorageSystem.save().catch(error => {
+            console.error('保存失败:', error);
+        });
     },
 
     load() {
@@ -4897,52 +4647,57 @@ const HelpSystem = {
                 <h2>功能列表</h2>
                 <div class="feature-grid">
                     <div class="feature-panel">
-                        <span class="feature-icon">📋</span>
-                        <div class="feature-title">节点编辑器</div>
+                        <span class="feature-icon">节点编辑</span>
+                        <div class="feature-title">可视化编辑和连接</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">🖌️</span>
-                        <div class="feature-title">绘画标注</div>
+                        <span class="feature-icon">绘画系统</span>
+                        <div class="feature-title">自由绘图和标记</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">🧮</span>
-                        <div class="feature-title">数学计算</div>
+                        <span class="feature-icon">数学计算</span>
+                        <div class="feature-title">实时高精度计算和公式</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">🖼️</span>
-                        <div class="feature-title">图片编辑</div>
+                        <span class="feature-icon">图片编辑</span>
+                        <div class="feature-title">jpg, jpeg, png, gif, webp, svg</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">📤</span>
-                        <div class="feature-title">代码合成</div>
+                        <span class="feature-icon">文本合并</span>
+                        <div class="feature-title">多个节点内容合并</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">🖱️</span>
-                        <div class="feature-title">图片拖拽</div>
+                        <span class="feature-icon">图片拖拽</span>
+                        <div class="feature-title">jpg, jpeg, png, gif, webp, svg</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">🎬</span>
-                        <div class="feature-title">视频播放</div>
+                        <span class="feature-icon">视频播放</span>
+                        <div class="feature-title">mp4, webm, ogg</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">🎵</span>
-                        <div class="feature-title">音频播放</div>
+                        <span class="feature-icon">音频播放</span>
+                        <div class="feature-title">mp3, wav, ogg</div>
                     </div>
                     
                     <div class="feature-panel">
-                        <span class="feature-icon">✂️</span>
-                        <div class="feature-title">图片分割</div>
+                        <span class="feature-icon">图片分合</span>
+                        <div class="feature-title">将图片分割为多个部分</div>
                     </div>
                      <div class="feature-panel">
-                        <span class="feature-icon">👌</span>
-                        <div class="feature-title">画中画</div>
+                        <span class="feature-icon">画中画</span>
+                        <div class="feature-title">绘画无限嵌套</div>
+                    </div>
+                     </div>
+                     <div class="feature-panel">
+                        <span class="feature-icon">文本预览</span>
+                        <div class="feature-title">md, markdown, js, json,yml, yaml, html, css, xml, txt</div>
                     </div>
                 </div>
             </div>
@@ -5077,10 +4832,10 @@ const HelpSystem = {
                     border-radius: 6px;
                 }
                 
-                /* 功能网格布局 */
+                /* 功能列表布局 - 一行一个 */
                 .feature-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    display: flex;
+                    flex-direction: column;
                     gap: 15px;
                     margin-top: 20px;
                 }
@@ -5088,16 +4843,31 @@ const HelpSystem = {
                 /* 功能面板 */
                 .feature-panel {
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
                     align-items: center;
-                    justify-content: center;
-                    padding: 20px;
+                    justify-content: flex-start;
+                    padding: 15px 20px;
                     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(20, 21, 30, 0.8));
                     border-radius: 10px;
                     border: 1px solid rgba(255, 255, 255, 0.1);
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                     transition: all 0.3s ease;
+                    text-align: left;
+                    width: 100%;
+                }
+                
+                /* 调整功能图标 */
+                .feature-icon {
+                    margin-right: 20px;
+                    margin-bottom: 0;
+                    min-width: 40px;
                     text-align: center;
+                }
+                
+                /* 调整功能标题 */
+                .feature-title {
+                    text-align: left;
+                    flex: 1;
                 }
                 
                 .feature-panel:hover {
@@ -6616,295 +6386,357 @@ const advancedCalculator = {
         'e': Math.E.toString(),  // 自然常数
         'π': Math.PI.toString()  // 圆周率
     },
-    
+
+    // 辅助：比较两个正数字符串的大小（返回 1, 0, -1）
+    compare(num1, num2) {
+        // 先统一去符号和小数点，比较数值大小
+        const clean = str => str.replace(/^-|\./g, '').replace(/^0+/, '') || '0';
+        const n1 = clean(num1);
+        const n2 = clean(num2);
+
+        if (n1.length > n2.length) return 1;
+        if (n1.length < n2.length) return -1;
+        if (n1 > n2) return 1;
+        if (n1 < n2) return -1;
+        return 0;
+    },
+
     // 高精度加法
     add(a, b) {
-        // 处理小数，转换为整数加法
+        if (a === '0' || a === '-0') return b;
+        if (b === '0' || b === '-0') return a;
+
+        const signA = a.startsWith('-');
+        const signB = b.startsWith('-');
+
+        // 两个负数 → 负 + 负 = -( |a| + |b| )
+        if (signA && signB) {
+            return '-' + this.add(a.slice(1), b.slice(1));
+        }
+
+        // 一正一负 → 转为减法
+        if (signA) return this.subtract(b, a.slice(1));
+        if (signB) return this.subtract(a, b.slice(1));
+
+        // 下面都是正数相加
         let scale = 0;
-        let numA = a;
-        let numB = b;
-        
-        // 确定小数位数
-        if (numA.includes('.')) {
-            const decimalPart = numA.split('.')[1];
-            scale = Math.max(scale, decimalPart.length);
-        }
-        
-        if (numB.includes('.')) {
-            const decimalPart = numB.split('.')[1];
-            scale = Math.max(scale, decimalPart.length);
-        }
-        
-        // 转换为整数
-        const intA = numA.replace('.', '') + '0'.repeat(scale - (numA.includes('.') ? numA.split('.')[1].length : 0));
-        const intB = numB.replace('.', '') + '0'.repeat(scale - (numB.includes('.') ? numB.split('.')[1].length : 0));
-        
-        // 执行整数加法
-        const maxLength = Math.max(intA.length, intB.length);
-        const paddedA = intA.padStart(maxLength, '0');
-        const paddedB = intB.padStart(maxLength, '0');
-        
+        let partA = a, partB = b;
+
+        if (a.includes('.')) scale = Math.max(scale, a.split('.')[1].length);
+        if (b.includes('.')) scale = Math.max(scale, b.split('.')[1].length);
+
+        // 补齐小数位
+        const intA = a.replace('.', '') + '0'.repeat(scale - (a.includes('.') ? a.split('.')[1].length : 0));
+        const intB = b.replace('.', '') + '0'.repeat(scale - (b.includes('.') ? b.split('.')[1].length : 0));
+
+        const maxLen = Math.max(intA.length, intB.length);
+        const padA = intA.padStart(maxLen, '0');
+        const padB = intB.padStart(maxLen, '0');
+
         let result = '';
         let carry = 0;
-        
-        for (let i = maxLength - 1; i >= 0; i--) {
-            const sum = parseInt(paddedA[i]) + parseInt(paddedB[i]) + carry;
+
+        for (let i = maxLen - 1; i >= 0; i--) {
+            const sum = (padA[i] | 0) + (padB[i] | 0) + carry;
             result = (sum % 10) + result;
-            carry = Math.floor(sum / 10);
+            carry = sum / 10 | 0;
         }
-        
-        if (carry > 0) {
-            result = carry + result;
-        }
-        
-        // 转换回小数
+
+        if (carry) result = carry + result;
+
+        // 还原小数点
         if (scale > 0) {
+            while (result.length < scale + 1) result = '0' + result;
             result = result.slice(0, -scale) + '.' + result.slice(-scale);
         }
-        
-        // 格式化结果：移除前导零和末尾多余的零
+
+        // 清理格式
         result = result.replace(/^0+/, '') || '0';
-        // 只有当结果不是 '0' 时才移除末尾的零
-        if (result !== '0') {
-            result = result.replace(/\.?0+$/, '');
-            result = result.replace(/\.$/, '');
+        if (result.startsWith('.')) result = '0' + result;
+        if (result !== '0' && result.includes('.')) {
+            result = result.replace(/0+$/, '').replace(/\.$/, '');
         }
-        
+
         return result;
     },
-    
+
     // 高精度减法
     subtract(a, b) {
-        // 处理负数情况
-        const isNegative = this.compare(a, b) < 0;
-        if (isNegative) {
-            return '-' + this.subtract(b, a);
-        }
-        
-        // 处理小数，转换为整数减法
+        if (b === '0' || b === '-0') return a;
+        if (a === '0' || a === '-0') return '-' + b;
+
+        const signA = a.startsWith('-');
+        const signB = b.startsWith('-');
+
+        // 处理各种符号组合
+        if (signA && !signB) return '-' + this.add(a.slice(1), b);
+        if (!signA && signB) return this.add(a, b.slice(1));
+        if (signA && signB) return this.subtract(b.slice(1), a.slice(1));
+
+        // 下面都是正数，判断大小
+        const cmp = this.compare(a, b);
+        if (cmp === 0) return '0';
+        if (cmp < 0) return '-' + this.subtract(b, a);
+
+        // a > b > 0，正常减法
         let scale = 0;
-        let numA = a;
-        let numB = b;
-        
-        // 确定小数位数
-        if (numA.includes('.')) {
-            const decimalPart = numA.split('.')[1];
-            scale = Math.max(scale, decimalPart.length);
-        }
-        
-        if (numB.includes('.')) {
-            const decimalPart = numB.split('.')[1];
-            scale = Math.max(scale, decimalPart.length);
-        }
-        
-        // 转换为整数
-        const intA = numA.replace('.', '') + '0'.repeat(scale - (numA.includes('.') ? numA.split('.')[1].length : 0));
-        const intB = numB.replace('.', '') + '0'.repeat(scale - (numB.includes('.') ? numB.split('.')[1].length : 0));
-        
-        // 执行整数减法
-        const maxLength = Math.max(intA.length, intB.length);
-        const paddedA = intA.padStart(maxLength, '0');
-        const paddedB = intB.padStart(maxLength, '0');
-        
+        let partA = a, partB = b;
+
+        if (a.includes('.')) scale = Math.max(scale, a.split('.')[1].length);
+        if (b.includes('.')) scale = Math.max(scale, b.split('.')[1].length);
+
+        const intA = a.replace('.', '') + '0'.repeat(scale - (a.includes('.') ? a.split('.')[1].length : 0));
+        const intB = b.replace('.', '') + '0'.repeat(scale - (b.includes('.') ? b.split('.')[1].length : 0));
+
+        const maxLen = Math.max(intA.length, intB.length);
+        const padA = intA.padStart(maxLen, '0');
+        const padB = intB.padStart(maxLen, '0');
+
         let result = '';
         let borrow = 0;
-        
-        for (let i = maxLength - 1; i >= 0; i--) {
-            let digitA = parseInt(paddedA[i]) - borrow;
-            const digitB = parseInt(paddedB[i]);
-            
-            if (digitA < digitB) {
-                digitA += 10;
+
+        for (let i = maxLen - 1; i >= 0; i--) {
+            let digit = (padA[i] | 0) - borrow;
+            const sub = padB[i] | 0;
+
+            if (digit < sub) {
+                digit += 10;
                 borrow = 1;
             } else {
                 borrow = 0;
             }
-            
-            result = (digitA - digitB) + result;
+
+            result = (digit - sub) + result;
         }
-        
-        // 转换回小数
+
+        // 还原小数点
         if (scale > 0) {
+            while (result.length < scale + 1) result = '0' + result;
             result = result.slice(0, -scale) + '.' + result.slice(-scale);
         }
-        
-        // 格式化结果：移除前导零和末尾多余的零
+
+        // 清理格式
         result = result.replace(/^0+/, '') || '0';
-        // 只有当结果不是 '0' 时才移除末尾的零
-        if (result !== '0') {
-            result = result.replace(/\.?0+$/, '');
-            result = result.replace(/\.$/, '');
+        if (result.startsWith('.')) result = '0' + result;
+        if (result !== '0' && result.includes('.')) {
+            result = result.replace(/0+$/, '').replace(/\.$/, '');
         }
-        
+
         return result;
     },
-    
-    // 高精度乘法
+
+    // 高精度乘法（优化版）
     multiply(a, b) {
         if (a === '0' || b === '0') return '0';
-        
-        // 处理小数，转换为整数乘法
-        let scale = 0;
-        let numA = a;
-        let numB = b;
-        
-        // 确定小数位数
-        if (numA.includes('.')) {
-            const decimalPart = numA.split('.')[1];
-            scale += decimalPart.length;
-            numA = numA.replace('.', '');
-        }
-        
-        if (numB.includes('.')) {
-            const decimalPart = numB.split('.')[1];
-            scale += decimalPart.length;
-            numB = numB.replace('.', '');
-        }
-        
-        // 转换为数字数组，方便计算
-        const arrA = numA.split('').reverse().map(Number);
-        const arrB = numB.split('').reverse().map(Number);
-        const result = new Array(arrA.length + arrB.length).fill(0);
-        
-        // 执行乘法
-        for (let i = 0; i < arrA.length; i++) {
-            for (let j = 0; j < arrB.length; j++) {
-                const product = arrA[i] * arrB[j] + result[i + j];
-                result[i + j] = product % 10;
-                result[i + j + 1] += Math.floor(product / 10);
-            }
-        }
-        
-        // 转换回字符串
-        let resultStr = result.reverse().join('');
-        
-        // 添加小数点
-        if (scale > 0) {
-            if (resultStr.length <= scale) {
-                resultStr = '0'.repeat(scale - resultStr.length + 1) + resultStr;
-            }
-            resultStr = resultStr.slice(0, -scale) + '.' + resultStr.slice(-scale);
-        }
-        
-        // 格式化结果：移除前导零和末尾多余的零
-        resultStr = resultStr.replace(/^0+/, '') || '0';
-        resultStr = resultStr.replace(/\.?0+$/, '');
-        resultStr = resultStr.replace(/\.$/, '');
-        
-        return resultStr;
-    },
-    
-    // 高精度除法（支持保留多位小数）
-    divide(a, b) {
-        if (b === '0') return '错误：除以零';
-        if (a === '0') return '0';
-        
+
+        // 处理符号
+        const signA = a.startsWith('-');
+        const signB = b.startsWith('-');
+        const resultSign = (signA !== signB) ? '-' : '';
+
+        // 移除符号
+        a = signA ? a.slice(1) : a;
+        b = signB ? b.slice(1) : b;
+
+        // 处理常数
+        a = this.constants[a] || a;
+        b = this.constants[b] || b;
+
         // 移除前导零
-        const cleanA = a.replace(/^0+/, '') || '0';
-        const cleanB = b.replace(/^0+/, '') || '0';
-        
-        // 处理小数，转换为整数除法
-        let scale = 0;
-        let numerator = cleanA;
-        let denominator = cleanB;
-        
-        // 移除分子和分母中的小数点
-        if (numerator.includes('.')) {
-            const decimalPart = numerator.split('.')[1];
-            scale += decimalPart.length;
-            numerator = numerator.replace('.', '');
+        a = a.replace(/^0+/, '') || '0';
+        b = b.replace(/^0+/, '') || '0';
+
+        // 处理小数
+        let decimalPlacesA = 0;
+        let decimalPlacesB = 0;
+
+        if (a.includes('.')) {
+            const partsA = a.split('.');
+            decimalPlacesA = partsA[1].length;
+            a = partsA[0] + partsA[1];
         }
-        
-        if (denominator.includes('.')) {
-            const decimalPart = denominator.split('.')[1];
-            scale -= decimalPart.length;
-            denominator = denominator.replace('.', '');
+
+        if (b.includes('.')) {
+            const partsB = b.split('.');
+            decimalPlacesB = partsB[1].length;
+            b = partsB[0] + partsB[1];
         }
-        
-        // 调整分子，使scale为正
-        if (scale > 0) {
-            numerator += '0'.repeat(scale);
-        } else if (scale < 0) {
-            denominator += '0'.repeat(Math.abs(scale));
-            scale = 0;
+
+        const totalDecimalPlaces = decimalPlacesA + decimalPlacesB;
+
+        // 如果两个数都是整数且不需要高精度，使用普通乘法
+        if (totalDecimalPlaces === 0 && a.length < 15 && b.length < 15) {
+            const result = (parseInt(a) * parseInt(b)).toString();
+            return resultSign + result;
         }
-        
-        // 执行整数除法，保留100位小数
-        let quotient = '';
-        let remainder = numerator;
-        let decimalCount = 0;
-        const maxDecimals = 10000;
-        const seenRemainders = new Map(); // 用于检测循环小数
-        
-        while (remainder !== '0' && decimalCount <= maxDecimals) {
-            // 检查是否出现循环
-            if (seenRemainders.has(remainder)) {
-                // 找到循环节起始位置
-                const startIndex = seenRemainders.get(remainder);
-                // 标记循环节
-                quotient = quotient.slice(0, startIndex) + '(' + quotient.slice(startIndex) + ')';
-                break;
+
+        // 反转数字字符串以便从最低位开始处理
+        const reversedA = a.split('').reverse();
+        const reversedB = b.split('').reverse();
+
+        // 结果数组，长度最多为 a.length + b.length
+        const result = new Array(a.length + b.length).fill(0);
+
+        // 逐位相乘
+        for (let i = 0; i < reversedA.length; i++) {
+            for (let j = 0; j < reversedB.length; j++) {
+                const product = parseInt(reversedA[i]) * parseInt(reversedB[j]);
+                result[i + j] += product;
+
+                // 处理进位
+                if (result[i + j] >= 10) {
+                    result[i + j + 1] += Math.floor(result[i + j] / 10);
+                    result[i + j] %= 10;
+                }
             }
-            
-            seenRemainders.set(remainder, quotient.length);
-            
-            let count = 0;
-            while (this.compare(remainder, denominator) >= 0) {
-                remainder = this.subtract(remainder, denominator);
-                count++;
-            }
-            quotient += count;
-            
-            if (decimalCount === 0 && remainder !== '0') {
-                quotient += '.';
-            }
-            
-            decimalCount++;
-            remainder += '0';
         }
-        
-        // 格式化结果：移除末尾多余的零和小数点
-        quotient = quotient.replace(/\.?0+$/, '');
-        quotient = quotient.replace(/\.$/, '');
-        
-        return quotient;
+
+        // 处理所有进位
+        for (let i = 0; i < result.length - 1; i++) {
+            if (result[i] >= 10) {
+                result[i + 1] += Math.floor(result[i] / 10);
+                result[i] %= 10;
+            }
+        }
+
+        // 移除结果数组末尾的0
+        while (result.length > 1 && result[result.length - 1] === 0) {
+            result.pop();
+        }
+
+        // 反转结果并转换为字符串
+        let resultStr = result.reverse().join('');
+
+        // 添加小数点
+        if (totalDecimalPlaces > 0) {
+            // 确保结果字符串足够长以插入小数点
+            while (resultStr.length <= totalDecimalPlaces) {
+                resultStr = '0' + resultStr;
+            }
+
+            const insertPos = resultStr.length - totalDecimalPlaces;
+            resultStr = resultStr.slice(0, insertPos) + '.' + resultStr.slice(insertPos);
+        }
+
+        // 移除前导零
+        resultStr = resultStr.replace(/^0+/, '') || '0';
+
+        // 移除末尾多余的零和小数点
+        if (resultStr.includes('.')) {
+            resultStr = resultStr.replace(/0+$/, '');
+            resultStr = resultStr.replace(/\.$/, '');
+        }
+
+        // 如果结果为"0"，不要加符号
+        if (resultStr === '0') {
+            return '0';
+        }
+
+        return resultSign + resultStr;
     },
-    
+
+    divide(a, b) {
+        // 假设 a, b 是字符串
+        if (b === '0' || b === '-0') return '错误：除以零';
+
+        const sign = (a.startsWith('-') !== b.startsWith('-')) ? '-' : '';
+        a = a.replace(/^-/, '');
+        b = b.replace(/^-/, '');
+
+        // 移除小数点，记录位数
+        let scale = 0;
+        if (a.includes('.')) {
+            const [int, dec] = a.split('.');
+            a = int + dec;
+            scale += dec.length;
+        }
+        if (b.includes('.')) {
+            const [int, dec] = b.split('.');
+            b = int + dec;
+            scale -= dec.length;   // 注意这里是减
+        }
+
+        // 转 BigInt
+        const A = BigInt(a || '0');
+        const B = BigInt(b || '0');
+
+        if (B === 0n) return '错误：除以零';
+
+        const integerPart = A / B;
+        let remainder = A % B;
+
+        let result = sign + integerPart.toString();
+
+        if (remainder === 0n) {
+            return result === '-0' ? '0' : result;
+        }
+
+        result += '.';
+        const seen = new Map();           // 余数 → 小数第几位开始
+        let decimalPos = 0;
+        const decimals = [];
+
+        while (remainder !== 0n && decimalPos < 1000) {  // 防止无限循环
+            if (seen.has(remainder)) {
+                const start = seen.get(remainder);
+                const nonRepeat = decimals.slice(0, start).join('');
+                const repeat = decimals.slice(start).join('');
+                return result + nonRepeat + '(' + repeat + ')';
+            }
+
+            seen.set(remainder, decimalPos);
+
+            remainder *= 10n;
+            const digit = remainder / B;
+            decimals.push(digit.toString());
+            remainder %= B;
+            decimalPos++;
+        }
+
+        // 去尾0
+        let decimalStr = decimals.join('').replace(/0+$/, '');
+        if (decimalStr === '') decimalStr = '0';
+
+        result += decimalStr;
+
+        return result === '-0' ? '0' : result;
+    },
+
     // 高精度求余运算
     mod(a, b) {
         if (b === '0') return '错误：除以零';
         if (a === '0') return '0';
-        
+
         // 移除前导零
         const cleanA = a.replace(/^0+/, '') || '0';
         const cleanB = b.replace(/^0+/, '') || '0';
-        
+
         // 处理小数，转换为整数
         let scale = 0;
         let numA = cleanA;
         let numB = cleanB;
-        
+
         // 确定小数位数
         if (numA.includes('.')) {
             const decimalPart = numA.split('.')[1];
             scale = Math.max(scale, decimalPart.length);
         }
-        
+
         if (numB.includes('.')) {
             const decimalPart = numB.split('.')[1];
             scale = Math.max(scale, decimalPart.length);
         }
-        
+
         // 转换为整数
         const intA = numA.replace('.', '') + '0'.repeat(scale - (numA.includes('.') ? numA.split('.')[1].length : 0));
         const intB = numB.replace('.', '') + '0'.repeat(scale - (numB.includes('.') ? numB.split('.')[1].length : 0));
-        
+
         // 执行求余运算
         let remainder = intA;
         while (this.compare(remainder, intB) >= 0) {
             remainder = this.subtract(remainder, intB);
         }
-        
+
         // 转换回小数
         if (scale > 0) {
             if (remainder.length <= scale) {
@@ -6912,93 +6744,105 @@ const advancedCalculator = {
             }
             remainder = remainder.slice(0, -scale) + '.' + remainder.slice(-scale);
         }
-        
+
         // 格式化结果
         remainder = remainder.replace(/^0+/, '') || '0';
         remainder = remainder.replace(/\.?0+$/, '');
         remainder = remainder.replace(/\.$/, '');
-        
+
         return remainder;
     },
-    
+
     // 比较两个数字字符串的大小（优化版：对齐小数位数）
     compare(a, b) {
         // 处理负数
         const isNegativeA = a.startsWith('-');
         const isNegativeB = b.startsWith('-');
-        
+
         if (isNegativeA && !isNegativeB) return -1;
         if (!isNegativeA && isNegativeB) return 1;
-        
+
         // 移除负号
         let absA = isNegativeA ? a.slice(1) : a;
         let absB = isNegativeB ? b.slice(1) : b;
-        
+
         // 处理常数
         absA = this.constants[absA] || absA;
         absB = this.constants[absB] || absB;
-        
+
         // 移除前导零
         absA = absA.replace(/^0+/, '') || '0';
         absB = absB.replace(/^0+/, '') || '0';
-        
+
         // 处理小数比较 - 对齐小数位数
         let [intA, decA = ''] = absA.split('.');
         let [intB, decB = ''] = absB.split('.');
-        
+
         // 对齐小数位数
         const maxDec = Math.max(decA.length, decB.length);
         decA = decA.padEnd(maxDec, '0');
         decB = decB.padEnd(maxDec, '0');
-        
-        // 合并整数和小数部分，进行字符串比较
-        const fullA = intA + decA;
-        const fullB = intB + decB;
-        
-        // 比较长度
-        if (fullA.length !== fullB.length) {
-            return isNegativeA ? fullB.length - fullA.length : fullA.length - fullB.length;
+
+        // 比较整数部分长度
+        if (intA.length > intB.length) {
+            return isNegativeA ? -1 : 1;
+        } else if (intA.length < intB.length) {
+            return isNegativeA ? 1 : -1;
         }
-        
-        // 逐位比较
-        for (let i = 0; i < fullA.length; i++) {
-            if (fullA[i] !== fullB[i]) {
-                const diff = parseInt(fullA[i]) - parseInt(fullB[i]);
-                return isNegativeA ? -diff : diff;
+
+        // 比较整数部分
+        for (let i = 0; i < intA.length; i++) {
+            const digitA = parseInt(intA[i]);
+            const digitB = parseInt(intB[i]);
+            if (digitA > digitB) {
+                return isNegativeA ? -1 : 1;
+            } else if (digitA < digitB) {
+                return isNegativeA ? 1 : -1;
             }
         }
-        
+
+        // 比较小数部分
+        for (let i = 0; i < maxDec; i++) {
+            const digitA = parseInt(decA[i] || '0');
+            const digitB = parseInt(decB[i] || '0');
+            if (digitA > digitB) {
+                return isNegativeA ? -1 : 1;
+            } else if (digitA < digitB) {
+                return isNegativeA ? 1 : -1;
+            }
+        }
+
         // 所有位数都相同
         return 0;
     },
-    
+
     // 字符串转数字（用于科学计算）
     strToNum(str) {
         // 处理常数
         if (this.constants[str]) {
             return parseFloat(this.constants[str]);
         }
-        
+
         const num = parseFloat(str);
         return isNaN(num) ? 0 : num;
     },
-    
+
     // 数字转字符串（用于科学计算结果）
     numToStr(num) {
         // 处理NaN和Infinity
         if (isNaN(num) || !isFinite(num)) {
             return '错误';
         }
-        
+
         // 处理大数，使用科学计数法
         if (Math.abs(num) > 1e15 || (Math.abs(num) < 1e-10 && num !== 0)) {
             return num.toExponential(10);
         }
-        
+
         // 处理小数，移除末尾的零
         return num.toString().replace(/\.?0+$/, '');
     },
-    
+
     // 幂运算
     power(base, exponent) {
         const baseNum = this.strToNum(base);
@@ -7006,25 +6850,25 @@ const advancedCalculator = {
         const result = Math.pow(baseNum, expNum);
         return this.numToStr(result);
     },
-    
+
     // n次根号
     nthRoot(base, root) {
         const baseNum = this.strToNum(base);
         const rootNum = this.strToNum(root);
-        
+
         if (baseNum < 0 && rootNum % 2 === 0) {
             return '错误：负数不能开偶次方';
         }
-        
+
         const result = Math.pow(baseNum, 1 / rootNum);
         return this.numToStr(result);
     },
-    
+
     // 平方根
     sqrt(num) {
         return this.nthRoot(num, '2');
     },
-    
+
     // 绝对值
     abs(num) {
         if (num.startsWith('-')) {
@@ -7032,61 +6876,61 @@ const advancedCalculator = {
         }
         return num;
     },
-    
+
     // 阶乘
     factorial(num) {
         const numVal = parseInt(num);
         if (isNaN(numVal) || numVal < 0 || !Number.isInteger(numVal)) {
             return '错误：阶乘仅支持非负整数';
         }
-        
+
         let result = 1;
         for (let i = 2; i <= numVal; i++) {
             result *= i;
         }
-        
+
         return result.toString();
     },
-    
+
     // 对数函数（默认底数10）
     log(num, base = '10') {
         const numVal = this.strToNum(num);
         const baseVal = this.strToNum(base);
-        
+
         if (numVal <= 0 || baseVal <= 0 || baseVal === 1) {
             return '错误：对数参数无效';
         }
-        
+
         const result = Math.log(numVal) / Math.log(baseVal);
         return this.numToStr(result);
     },
-    
+
     // 自然对数
     ln(num) {
         return this.log(num, this.constants.e);
     },
-    
+
     // 正弦函数（角度制）
     sin(angle) {
         const angleRad = this.strToNum(angle) * Math.PI / 180;
         const result = Math.sin(angleRad);
         return this.numToStr(result);
     },
-    
+
     // 余弦函数（角度制）
     cos(angle) {
         const angleRad = this.strToNum(angle) * Math.PI / 180;
         const result = Math.cos(angleRad);
         return this.numToStr(result);
     },
-    
+
     // 正切函数（角度制）
     tan(angle) {
         const angleRad = this.strToNum(angle) * Math.PI / 180;
         const result = Math.tan(angleRad);
         return this.numToStr(result);
     },
-    
+
     // 余割函数（角度制）
     csc(angle) {
         const sinVal = this.strToNum(this.sin(angle));
@@ -7096,7 +6940,7 @@ const advancedCalculator = {
         const result = 1 / sinVal;
         return this.numToStr(result);
     },
-    
+
     // 正割函数（角度制）
     sec(angle) {
         const cosVal = this.strToNum(this.cos(angle));
@@ -7106,7 +6950,7 @@ const advancedCalculator = {
         const result = 1 / cosVal;
         return this.numToStr(result);
     },
-    
+
     // 余切函数（角度制）
     cot(angle) {
         const tanVal = this.strToNum(this.tan(angle));
@@ -7116,7 +6960,7 @@ const advancedCalculator = {
         const result = 1 / tanVal;
         return this.numToStr(result);
     },
-    
+
     // 递归下降解析器 - 词法分析
     tokenize(expression) {
         const tokens = [];
@@ -7124,7 +6968,7 @@ const advancedCalculator = {
         // 确保比较操作符的顺序正确，长操作符优先匹配
         const regex = /(\d+\.?\d*)|(==|!=|>=|<=|>|<)|([+\-*/^!%])|(\()|(\))|(\[)|(\])|(\{|\})|(sin|cos|tan|csc|sec|cot|sqrt|abs|log|ln|factorial)|(e|π)/gi;
         let match;
-        
+
         while ((match = regex.exec(expression)) !== null) {
             if (match[1]) {
                 tokens.push({ type: 'number', value: match[1] });
@@ -7148,43 +6992,43 @@ const advancedCalculator = {
                 tokens.push({ type: 'constant', value: match[10] });
             }
         }
-        
+
         return tokens;
     },
-    
+
     // 递归下降解析器 - 语法分析和计算
     parseExpression(tokens) {
         let index = 0;
         const self = this;
-        
+
         // 辅助函数：获取当前token
         const peek = () => tokens[index];
         const consume = () => tokens[index++];
-        
+
         // 解析数字、常数、括号或函数
         function parsePrimary() {
             const token = peek();
-            
+
             if (token.type === 'number') {
                 return consume().value;
             }
-            
+
             if (token.type === 'constant') {
                 const constant = consume().value;
                 return self.constants[constant] || constant;
             }
-            
+
             if (token.type === 'function') {
                 const func = consume().value;
                 consume(); // 跳过 '('
-                
+
                 // 处理阶乘（一元后缀操作符）
                 if (func === 'factorial') {
                     const arg = parseComparison();
                     consume(); // 跳过 ')'
                     return self.factorial(arg);
                 }
-                
+
                 // 处理nthRoot（二元函数）
                 if (func === 'nthRoot') {
                     const base = parseComparison();
@@ -7198,7 +7042,7 @@ const advancedCalculator = {
                         return self.sqrt(base); // 默认平方根
                     }
                 }
-                
+
                 // 处理log（支持可选底数）
                 if (func === 'log') {
                     const num = parseComparison();
@@ -7212,11 +7056,11 @@ const advancedCalculator = {
                         return self.log(num); // 默认底数10
                     }
                 }
-                
+
                 // 处理其他一元函数
                 const arg = parseComparison();
                 consume(); // 跳过 ')'
-                
+
                 switch (func) {
                     case 'sin': return self.sin(arg);
                     case 'cos': return self.cos(arg);
@@ -7230,102 +7074,102 @@ const advancedCalculator = {
                     default: return '错误：未知函数';
                 }
             }
-            
+
             if (token.value === '(' || token.value === '[' || token.value === '{') {
                 const openParen = consume().value;
                 const expr = parseComparison();
-                
+
                 // 匹配对应的闭括号
                 const closeParen = {
                     '(': ')',
                     '[': ']',
                     '{': '}'
                 }[openParen];
-                
+
                 if (peek() && peek().value === closeParen) {
                     consume(); // 跳过对应的闭括号
                 } else {
                     return '错误：括号不匹配';
                 }
-                
+
                 return expr;
             }
-            
+
             return '错误';
         }
-        
+
         // 解析阶乘（一元后缀操作符）
         function parseFactorial() {
             let left = parsePrimary();
-            
+
             while (peek() && peek().value === '!') {
                 consume(); // 跳过 '!'
                 left = self.factorial(left);
             }
-            
+
             return left;
         }
-        
+
         // 解析幂运算
         function parsePower() {
             let left = parseFactorial();
-            
+
             while (peek() && peek().value === '^') {
                 const op = consume().value;
                 const right = parsePower(); // 幂运算右结合
                 left = self.power(left, right);
             }
-            
+
             return left;
         }
-        
+
         // 解析乘除求余运算
         function parseTerm() {
             let left = parsePower();
-            
+
             while (peek() && (peek().value === '*' || peek().value === '/' || peek().value === '%')) {
                 const op = consume().value;
                 const right = parsePower();
-                
+
                 switch (op) {
                     case '*': left = self.multiply(left, right); break;
                     case '/': left = self.divide(left, right); break;
                     case '%': left = self.mod(left, right); break;
                 }
             }
-            
+
             return left;
         }
-        
+
         // 解析加减运算
         function parseAdditive() {
             let left = parseTerm();
-            
+
             while (peek() && (peek().value === '+' || peek().value === '-')) {
                 const op = consume().value;
                 const right = parseTerm();
-                
+
                 switch (op) {
                     case '+': left = self.add(left, right); break;
                     case '-': left = self.subtract(left, right); break;
                 }
             }
-            
+
             return left;
         }
-        
+
         // 解析比较操作
         function parseComparison() {
             let left = parseAdditive();
-            
+
             while (peek() && peek().type === 'comparison') {
                 const op = consume().value;
                 const right = parseAdditive();
-                
+
                 // 使用优化的比较函数，自动对齐小数位数
                 const comparisonResult = self.compare(left, right);
                 let result = false;
-                
+
                 switch (op) {
                     case '>': result = comparisonResult > 0; break;
                     case '<': result = comparisonResult < 0; break;
@@ -7334,63 +7178,65 @@ const advancedCalculator = {
                     case '==': result = comparisonResult === 0; break;
                     case '!=': result = comparisonResult !== 0; break;
                 }
-                
+
                 // 返回布尔结果
                 left = result ? '真' : '假';
             }
-            
+
             return left;
         }
-        
+
         return parseComparison();
     },
-    
+
     // 计算表达式结果
     calculateExpression(expression) {
         try {
             // 清理表达式
             const trimmed = expression.trim();
             if (!trimmed) return null;
-            
+
             // 检查是否包含非数学字符，添加对比较操作符的支持
             const mathCharsRegex = /^[\d+\-*/^!()\[\]{}<>.,=\sabcdefghijklmnopqrstuvwxyzπe]+$/i;
             if (!mathCharsRegex.test(trimmed)) {
                 return null;
             }
-            
+
             // 移除等号（如果有），只保留比较操作符中的等号
             let cleaned = trimmed;
             // 处理比较操作符，将它们替换为特殊标记，避免被误处理
-            const opMap = {
-                '==': '__EQ__',
-                '!=': '__NE__',
-                '>=': '__GE__',
-                '<=': '__LE__',
-                '>': '__GT__',
-                '<': '__LT__'
-            };
-            
+            const opMap = [
+                ['==', '__EQ__'],
+                ['!=', '__NE__'],
+                ['>=', '__GE__'],
+                ['<=', '__LE__'],
+                ['>', '__GT__'],
+                ['<', '__LT__']
+            ];
+
             // 替换比较操作符为特殊标记
-            for (const [op, marker] of Object.entries(opMap)) {
+            for (let i = 0; i < opMap.length; i++) {
+                const [op, marker] = opMap[i];
                 cleaned = cleaned.replace(new RegExp(op, 'g'), marker);
             }
-            
+
             // 移除所有剩余的等号
             cleaned = cleaned.replace(/=/g, '');
-            
+
             // 恢复比较操作符
-            for (const [op, marker] of Object.entries(opMap)) {
+            for (let i = 0; i < opMap.length; i++) {
+                const [op, marker] = opMap[i];
                 cleaned = cleaned.replace(new RegExp(marker, 'g'), op);
             }
-            
+
             // 移除所有空格
             cleaned = cleaned.replace(/\s+/g, '');
             if (!cleaned) return null;
-            
+
             // 词法分析
             const tokens = this.tokenize(cleaned);
             if (tokens.length === 0) return null;
-            
+
             // 语法分析和计算
             const result = this.parseExpression(tokens);
             return result;
@@ -7399,30 +7245,30 @@ const advancedCalculator = {
             return '错误';
         }
     },
-    
+
     // 检查节点是否包含可计算的表达式
     isExpressionNode(node) {
         const content = node.code.trim();
         if (content.length === 0) {
             return false;
         }
-        
+
         // 检查是否只是纯数字或常数
         const isPureNumber = /^\d+(\.\d+)?$/.test(content);
         const isConstant = /^(e|π)$/.test(content);
         if (isPureNumber || isConstant) {
             return false;
         }
-        
+
         // 检查是否包含非数学字符，添加对比较操作符的支持
         const mathCharsRegex = /^[\d+\-*/^!()\[\]{}<>.,=\sabcdefghijklmnopqrstuvwxyzπe]+$/i;
         if (!mathCharsRegex.test(content)) {
             return false;
         }
-        
+
         return true;
     },
-    
+
     // 计算所有节点的表达式
     calculateAllExpressions(nodes) {
         nodes.forEach(node => {
@@ -7435,14 +7281,14 @@ const advancedCalculator = {
         });
         return nodes;
     },
-    
+
     // 创建帮助对话框
     createHelpDialog() {
         // 检查是否已存在帮助对话框
         if (document.getElementById('calculator-help-dialog')) {
             return;
         }
-        
+
         const helpDialog = document.createElement('div');
         helpDialog.id = 'calculator-help-dialog';
         helpDialog.style.cssText = `
@@ -7461,7 +7307,7 @@ const advancedCalculator = {
             overflow-y: auto;
             font-family: Arial, sans-serif;
         `;
-        
+
         helpDialog.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0; color: hsl(210, 100%, 50%);">计算帮助</h2>
@@ -7523,14 +7369,14 @@ const advancedCalculator = {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(helpDialog);
-        
+
         // 添加关闭事件
         document.getElementById('close-help-dialog').addEventListener('click', () => {
             helpDialog.remove();
         });
-        
+
         // 点击对话框外部关闭
         helpDialog.addEventListener('click', (e) => {
             if (e.target === helpDialog) {
@@ -7538,28 +7384,28 @@ const advancedCalculator = {
             }
         });
     },
-    
+
     // 更新节点显示，添加计算结果提示和帮助按钮
     updateNodeDisplays(nodes) {
         nodes.forEach(node => {
             const nodeElement = document.getElementById(`n-${node.id}`);
             if (!nodeElement) return;
-            
+
             // 检查是否已有结果提示元素
             let resultHintElement = nodeElement.querySelector('.expression-result-hint');
-            
+
             // 检查是否是表达式节点
             const isExprNode = this.isExpressionNode(node);
-            
+
             // 检查结果是否有效
-            const isValidResult = node.expressionResult !== null && 
-                                node.expressionResult !== 'Error' && 
-                                node.expressionResult !== '错误' && 
-                                node.expressionResult !== 'NaN' && 
-                                node.expressionResult !== 'Infinity' && 
-                                node.expressionResult !== '-Infinity' &&
-                                typeof node.expressionResult === 'string'; // 允许字符串结果，如"真"和"假"
-            
+            const isValidResult = node.expressionResult !== null &&
+                node.expressionResult !== 'Error' &&
+                node.expressionResult !== '错误' &&
+                node.expressionResult !== 'NaN' &&
+                node.expressionResult !== 'Infinity' &&
+                node.expressionResult !== '-Infinity' &&
+                typeof node.expressionResult === 'string'; // 允许字符串结果，如"真"和"假"
+
             if (isValidResult) {
                 // 添加或更新结果提示
                 if (!resultHintElement) {
@@ -7584,16 +7430,16 @@ const advancedCalculator = {
                         user-select: none;
                         transition: all 0.2s ease;
                     `;
-                    
+
                     // 添加点击复制功能
-                    resultHintElement.addEventListener('click', function() {
+                    resultHintElement.addEventListener('click', function () {
                         const result = this.textContent.replace('= ', '');
                         navigator.clipboard.writeText(result).then(() => {
                             // 显示复制成功提示
                             const originalBg = this.style.background;
                             this.style.background = 'hsl(210, 100%, 50%)';
                             this.textContent = '已复制!';
-                            
+
                             setTimeout(() => {
                                 this.style.background = originalBg;
                                 this.textContent = `= ${result}`;
@@ -7602,7 +7448,7 @@ const advancedCalculator = {
                             console.error('复制失败:', err);
                         });
                     });
-                    
+
                     nodeElement.appendChild(resultHintElement);
                 }
                 resultHintElement.textContent = `= ${node.expressionResult}`;
@@ -7612,11 +7458,11 @@ const advancedCalculator = {
                     resultHintElement.remove();
                 }
             }
-            
+
             // 处理帮助按钮
             const headerElement = nodeElement.querySelector('.node-header');
             let helpButton = nodeElement.querySelector('.help-button');
-            
+
             if (isExprNode) {
                 // 添加或更新帮助按钮
                 if (!helpButton) {
@@ -7636,12 +7482,12 @@ const advancedCalculator = {
                         align-items: center;
                         justify-content: center;
                     `;
-                    
+
                     // 添加点击事件
                     helpButton.addEventListener('click', () => {
                         advancedCalculator.createHelpDialog();
                     });
-                    
+
                     // 将帮助按钮添加到标题栏的tool-group中
                     const toolGroup = headerElement.querySelector('.tool-group');
                     if (toolGroup) {
@@ -7656,24 +7502,24 @@ const advancedCalculator = {
             }
         });
     },
-    
+
     // 集成到主应用的功能
     integrateWithApp(app) {
         // 保存原始的save方法
         const originalSave = app.save;
-        
+
         // 重写save方法，添加计算逻辑
-        app.save = function() {
+        app.save = function () {
             // 执行原始保存
             originalSave.call(this);
-            
+
             // 执行计算
             advancedCalculator.calculateAllExpressions(this.nodes);
-            
+
             // 更新显示
             advancedCalculator.updateNodeDisplays(this.nodes);
         };
-        
+
         // 监听连接变化
         // 移除renderConns中的计算逻辑，避免连接线渲染延迟
         // 连接变化时不需要重新计算所有表达式，只在节点内容变化时计算
@@ -7685,28 +7531,28 @@ const advancedCalculator = {
             advancedCalculator.updateNodeDisplays(this.nodes);
         };
         */
-        
+
         // 监听节点添加
         const originalAddNewNode = app.addNewNode;
-        app.addNewNode = function() {
+        app.addNewNode = function () {
             originalAddNewNode.call(this);
             advancedCalculator.calculateAllExpressions(this.nodes);
             advancedCalculator.updateNodeDisplays(this.nodes);
         };
-        
+
         // 监听节点删除
         const originalRemoveNode = app.removeNode;
-        app.removeNode = function(id) {
+        app.removeNode = function (id) {
             originalRemoveNode.call(this, id);
             advancedCalculator.calculateAllExpressions(this.nodes);
             advancedCalculator.updateNodeDisplays(this.nodes);
         };
-        
+
         // 监听节点内容变化
         const originalCreateNode = app.createNode;
-        app.createNode = function(id, x, y, w, h, name, code, isInstance = false, originalId = null) {
+        app.createNode = function (id, x, y, w, h, name, code, isInstance = false, originalId = null) {
             const node = originalCreateNode.call(this, id, x, y, w, h, name, code, isInstance, originalId);
-            
+
             // 添加内容变化监听
             const nodeElement = document.getElementById(`n-${id}`);
             if (nodeElement) {
@@ -7714,25 +7560,25 @@ const advancedCalculator = {
                 if (textarea && !isInstance) {
                     // 保存原始input事件处理函数
                     const originalInput = textarea.oninput;
-                    
-                    textarea.oninput = function() {
+
+                    textarea.oninput = function () {
                         // 执行原始input处理
                         originalInput.call(this);
-                        
+
                         // 执行计算
                         advancedCalculator.calculateAllExpressions(app.nodes);
                         advancedCalculator.updateNodeDisplays(app.nodes);
                     };
                 }
             }
-            
+
             return node;
         };
     }
 };
 
 // 页面加载完成后集成到主应用
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // 等待主应用初始化
     setTimeout(() => {
         if (typeof app !== 'undefined') {
@@ -13355,11 +13201,15 @@ window.addEventListener('load', () => {
     window.placementGame = new PlacementGame();
 });
 
-
-// storage.js - 独立的存储系统模块
+// storage.js - 独立的存储系统模块（使用IndexedDB）
 const StorageSystem = {
     // 存储键名
     STORAGE_KEY: 'flow_v3_3',
+    
+    // IndexedDB配置
+    DB_NAME: 'creative-editor-db',
+    DB_VERSION: 1,
+    STORE_NAME: 'projects',
     
     // 当前应用实例引用（将在初始化时设置）
     app: null,
@@ -13370,19 +13220,182 @@ const StorageSystem = {
     // 图片处理器引用
     imageHandler: null,
     
+    // IndexedDB数据库实例
+    db: null,
+    
+    // 防抖相关
+    saveTimeout: null,
+    SAVE_DELAY: 1000, // 保存延迟时间（毫秒）
+    isSaving: false,
+    
     // 初始化存储系统
     init(appInstance, drawingManagerInstance, imageHandlerInstance) {
         this.app = appInstance;
         this.drawingManager = drawingManagerInstance;
         this.imageHandler = imageHandlerInstance;
-        console.log('存储系统已初始化');
+        
+        // 初始化IndexedDB
+        return this.initIndexedDB().then(() => {
+            console.log('存储系统已初始化');
+            return true;
+        }).catch(error => {
+            console.error('IndexedDB初始化失败:', error);
+            // 降级到localStorage
+            console.log('降级到localStorage存储');
+            return true;
+        });
     },
     
-    // --- 实时保存和加载（使用localStorage）---
+    // 初始化IndexedDB
+    initIndexedDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+            
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+                    db.createObjectStore(this.STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            
+            request.onsuccess = (event) => {
+                this.db = event.target.result;
+                resolve();
+            };
+            
+            request.onerror = (event) => {
+                reject(event.target.error);
+            };
+        });
+    },
     
-    // 保存当前状态到localStorage
+    // 保存数据到IndexedDB
+    saveToIndexedDB(key, data) {
+        return new Promise((resolve, reject) => {
+            if (!this.db) {
+                // 降级到localStorage
+                return this.saveToLocalStorage(key, data).then(resolve).catch(reject);
+            }
+            
+            const transaction = this.db.transaction([this.STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(this.STORE_NAME);
+            const request = store.put({ id: key, data, timestamp: Date.now() });
+            
+            request.onsuccess = () => {
+                console.log('状态已保存到IndexedDB');
+                resolve();
+            };
+            
+            request.onerror = (event) => {
+                console.error('保存到IndexedDB失败:', event.target.error);
+                // 降级到localStorage
+                this.saveToLocalStorage(key, data).then(resolve).catch(reject);
+            };
+        });
+    },
+    
+    // 从IndexedDB加载数据
+    loadFromIndexedDB(key) {
+        return new Promise((resolve, reject) => {
+            if (!this.db) {
+                // 降级到localStorage
+                return this.loadFromLocalStorage(key).then(resolve).catch(reject);
+            }
+            
+            const transaction = this.db.transaction([this.STORE_NAME], 'readonly');
+            const store = transaction.objectStore(this.STORE_NAME);
+            const request = store.get(key);
+            
+            request.onsuccess = () => {
+                if (request.result) {
+                    console.log('状态已从IndexedDB加载');
+                    resolve(request.result.data);
+                } else {
+                    resolve(null);
+                }
+            };
+            
+            request.onerror = (event) => {
+                console.error('从IndexedDB加载失败:', event.target.error);
+                // 降级到localStorage
+                this.loadFromLocalStorage(key).then(resolve).catch(reject);
+            };
+        });
+    },
+    
+    // 保存数据到localStorage（降级方案）
+    saveToLocalStorage(key, data) {
+        return new Promise((resolve, reject) => {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                console.log('状态已保存到localStorage');
+                resolve();
+            } catch (error) {
+                console.error('保存到localStorage失败:', error);
+                reject(error);
+            }
+        });
+    },
+    
+    // 从localStorage加载数据（降级方案）
+    loadFromLocalStorage(key) {
+        return new Promise((resolve, reject) => {
+            try {
+                const savedData = localStorage.getItem(key);
+                if (savedData) {
+                    console.log('状态已从localStorage加载');
+                    resolve(JSON.parse(savedData));
+                } else {
+                    resolve(null);
+                }
+            } catch (error) {
+                console.error('从localStorage加载失败:', error);
+                reject(error);
+            }
+        });
+    },
+    
+    // --- 实时保存和加载 ---
+    
+    // 保存当前状态（防抖版本）
     save() {
+        // 清除之前的定时器
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+        
+        // 设置新的定时器
+        this.saveTimeout = setTimeout(() => {
+            this._performSave();
+        }, this.SAVE_DELAY);
+        
+        // 返回一个Promise，以便调用者可以等待保存完成
+        return new Promise((resolve, reject) => {
+            // 保存完成时的回调
+            this.onSaveComplete = (success, error) => {
+                if (success) {
+                    resolve();
+                } else {
+                    reject(error);
+                }
+            };
+        });
+    },
+    
+    // 实际执行保存操作
+    _performSave() {
+        if (this.isSaving) {
+            return; // 防止并发保存
+        }
+        
+        this.isSaving = true;
+        
         try {
+            // 禁用音频和视频播放器数据保存，避免页面卡死
+            // 音频和视频播放器的URL在页面刷新后会失效，重新创建会导致卡顿
+            let audioPlayersData = [];
+            let videoPlayersData = [];
+            
             const data = {
                 // 节点数据
                 n: this.app.nodes,
@@ -13397,128 +13410,170 @@ const StorageSystem = {
                 // emoji数据
                 e: this.drawingManager ? this.drawingManager.emojis : [],
                 // 图片数据（如果可用）
-                i: this.imageHandler ? this.imageHandler.images : []
+                i: this.imageHandler ? this.imageHandler.images : [],
+                // 音频播放器数据（如果可用）
+                a: audioPlayersData,
+                // 视频播放器数据（如果可用）
+                v: videoPlayersData
             };
             
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-            console.log('状态已保存到localStorage');
+            this.saveToIndexedDB(this.STORAGE_KEY, data).then(() => {
+                this.isSaving = false;
+                if (this.onSaveComplete) {
+                    this.onSaveComplete(true);
+                }
+            }).catch(error => {
+                this.isSaving = false;
+                console.error('保存状态失败:', error);
+                if (this.onSaveComplete) {
+                    this.onSaveComplete(false, error);
+                }
+            });
         } catch (error) {
+            this.isSaving = false;
             console.error('保存状态失败:', error);
+            if (this.onSaveComplete) {
+                this.onSaveComplete(false, error);
+            }
         }
     },
     
-    // 从localStorage加载状态
+    // 从存储加载状态
     load() {
-        try {
-            const savedData = localStorage.getItem(this.STORAGE_KEY);
-            if (!savedData) {
+        return this.loadFromIndexedDB(this.STORAGE_KEY).then(data => {
+            if (!data) {
                 console.log('没有找到保存的数据');
                 return false;
             }
             
-            const data = JSON.parse(savedData);
-            
-            // 恢复视图状态
-            this.app.panX = data.x || 0;
-            this.app.panY = data.y || 0;
-            this.app.zoom = data.z || 1;
-            
-            // 清空现有数据
-            this.app.nodes = [];
-            this.app.conns = [];
-            this.app.nodeMap.clear();
-            this.app.layer.innerHTML = '';
-            this.app.svgGroup.innerHTML = '';
-            
-            // 重新创建所有节点
-            if (data.n && Array.isArray(data.n)) {
-                data.n.forEach(n => {
-                    this.app.createNode(n.id, n.x, n.y, n.w, n.h, n.name, n.code, n.isInstance, n.originalId);
-                });
-            }
-            
-            // 过滤掉连接到第一个节点的连接，防止死循环
-            if (data.c && Array.isArray(data.c)) {
-                this.app.conns = data.c.filter(conn => {
-                    const toNodeIndex = this.app.nodes.findIndex(n => n.id === conn.to);
-                    return toNodeIndex !== 0;
-                });
-            }
-            
-            // 加载绘画数据
-            if (this.drawingManager && data.d && Array.isArray(data.d)) {
-                this.drawingManager.paths = data.d;
-                this.drawingManager.renderAllDrawingPaths();
-            }
-            
-            // 加载emoji数据
-            if (this.drawingManager && data.e && Array.isArray(data.e)) {
-                // 清空现有emoji
-                this.drawingManager.emojis.forEach(emoji => {
-                    if (emoji.element && emoji.element.parentNode) {
-                        emoji.element.parentNode.removeChild(emoji.element);
-                    }
-                });
-                this.drawingManager.emojis = [];
+            try {
+                // 恢复视图状态
+                this.app.panX = data.x || 0;
+                this.app.panY = data.y || 0;
+                this.app.zoom = data.z || 1;
                 
-                // 重新创建所有emoji
-                const container = document.getElementById('container');
-                data.e.forEach(emojiData => {
-                    const emojiElement = document.createElement('div');
-                    emojiElement.textContent = emojiData.emoji;
-                    emojiElement.style.position = 'absolute';
-                    emojiElement.style.left = `${emojiData.x}px`;
-                    emojiElement.style.top = `${emojiData.y}px`;
-                    emojiElement.style.fontSize = '50px';
-                    emojiElement.style.cursor = 'move';
-                    emojiElement.style.zIndex = '20';
-                    emojiElement.style.userSelect = 'none';
-                    emojiElement.className = 'emoji-item';
-                    emojiElement.dataset.emojiId = emojiData.id;
-                    
-                    // 添加到画布
-                    container.appendChild(emojiElement);
-                    
-                    // 添加到emojis数组
-                    this.drawingManager.emojis.push({
-                        id: emojiData.id,
-                        element: emojiElement,
-                        x: emojiData.x,
-                        y: emojiData.y,
-                        emoji: emojiData.emoji
+                // 清空现有数据
+                this.app.nodes = [];
+                this.app.conns = [];
+                this.app.nodeMap.clear();
+                this.app.layer.innerHTML = '';
+                this.app.svgGroup.innerHTML = '';
+                
+                // 重新创建所有节点
+                if (data.n && Array.isArray(data.n)) {
+                    data.n.forEach(n => {
+                        this.app.createNode(n.id, n.x, n.y, n.w, n.h, n.name, n.code, n.isInstance, n.originalId);
                     });
+                }
+                
+                // 过滤掉连接到第一个节点的连接，防止死循环
+                if (data.c && Array.isArray(data.c)) {
+                    this.app.conns = data.c.filter(conn => {
+                        const toNodeIndex = this.app.nodes.findIndex(n => n.id === conn.to);
+                        return toNodeIndex !== 0;
+                    });
+                }
+                
+                // 加载绘画数据
+                if (this.drawingManager && data.d && Array.isArray(data.d)) {
+                    this.drawingManager.paths = data.d;
+                    this.drawingManager.renderAllDrawingPaths();
+                }
+                
+                // 加载emoji数据
+                if (this.drawingManager && data.e && Array.isArray(data.e)) {
+                    // 清空现有emoji
+                    this.drawingManager.emojis.forEach(emoji => {
+                        if (emoji.element && emoji.element.parentNode) {
+                            emoji.element.parentNode.removeChild(emoji.element);
+                        }
+                    });
+                    this.drawingManager.emojis = [];
                     
-                    // 为emoji元素添加交互功能
-                    this.drawingManager.makeEmojiInteractive(emojiElement);
-                });
+                    // 重新创建所有emoji
+                    const container = document.getElementById('container');
+                    data.e.forEach(emojiData => {
+                        const emojiElement = document.createElement('div');
+                        emojiElement.textContent = emojiData.emoji;
+                        emojiElement.style.position = 'absolute';
+                        emojiElement.style.left = `${emojiData.x}px`;
+                        emojiElement.style.top = `${emojiData.y}px`;
+                        emojiElement.style.fontSize = '50px';
+                        emojiElement.style.cursor = 'move';
+                        emojiElement.style.zIndex = '20';
+                        emojiElement.style.userSelect = 'none';
+                        emojiElement.className = 'emoji-item';
+                        emojiElement.dataset.emojiId = emojiData.id;
+                        
+                        // 添加到画布
+                        container.appendChild(emojiElement);
+                        
+                        // 添加到emojis数组
+                        this.drawingManager.emojis.push({
+                            id: emojiData.id,
+                            element: emojiElement,
+                            x: emojiData.x,
+                            y: emojiData.y,
+                            emoji: emojiData.emoji
+                        });
+                        
+                        // 为emoji元素添加交互功能
+                        this.drawingManager.makeEmojiInteractive(emojiElement);
+                    });
+                }
+                
+                // 加载图片数据
+                if (this.imageHandler && data.i && Array.isArray(data.i)) {
+                    this.imageHandler.images = data.i;
+                    // 重新渲染所有图片
+                    this.imageHandler.images.forEach(image => {
+                        this.imageHandler.renderImage(image);
+                    });
+                }
+                
+                // 禁用音频和视频播放器数据加载，避免页面卡死
+                // 音频和视频播放器的URL在页面刷新后会失效，重新创建会导致卡顿
+                if (window.MusicSystem) {
+                    window.MusicSystem.audioPlayers = [];
+                }
+                if (window.VideoSystem) {
+                    window.VideoSystem.videoPlayers = [];
+                }
+                
+                // 更新视图
+                this.app.updateTransform();
+                this.app.renderConns();
+                this.app.updateMinimap();
+                
+                console.log('状态已加载');
+                return true;
+            } catch (error) {
+                console.error('加载状态失败:', error);
+                return false;
             }
-            
-            // 加载图片数据
-            if (this.imageHandler && data.i && Array.isArray(data.i)) {
-                this.imageHandler.images = data.i || [];
-                // 重新渲染所有图片
-                this.imageHandler.images.forEach(image => {
-                    this.imageHandler.renderImage(image);
-                });
-            }
-            
-            // 更新视图
-            this.app.updateTransform();
-            this.app.renderConns();
-            this.app.updateMinimap();
-            
-            console.log('状态已从localStorage加载');
-            return true;
-        } catch (error) {
-            console.error('加载状态失败:', error);
+        }).catch(error => {
+            console.error('加载数据失败:', error);
             return false;
-        }
+        });
     },
     
     // 清空所有存储数据
     clearAll() {
         if (confirm("确定要清空所有数据吗？")) {
             AudioSystem.playDeleteSound();
+            
+            // 清空IndexedDB
+            if (this.db) {
+                const transaction = this.db.transaction([this.STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(this.STORE_NAME);
+                const request = store.clear();
+                
+                request.onsuccess = () => {
+                    console.log('IndexedDB已清空');
+                };
+            }
+            
+            // 同时清空localStorage作为备份
             localStorage.clear();
             location.reload();
         }
@@ -13751,7 +13806,7 @@ const StorageSystem = {
         
         this.app.updateTransform();
         this.app.renderConns();
-        this.save(); // 保存到localStorage
+        this.save(); // 保存到存储
         this.app.updateMinimap();
         
         console.log('数据已从JSON文件加载');
@@ -13789,44 +13844,116 @@ const StorageSystem = {
     backup() {
         const backupId = 'backup_' + Date.now();
         const backupData = this.getStateAsJson();
-        localStorage.setItem(backupId, backupData);
-        console.log(`已创建备份: ${backupId}`);
-        return backupId;
+        
+        // 保存备份到IndexedDB
+        return this.saveToIndexedDB(backupId, backupData).then(() => {
+            console.log(`已创建备份: ${backupId}`);
+            return backupId;
+        }).catch(error => {
+            console.error('创建备份失败:', error);
+            return null;
+        });
     },
     
     // 从备份恢复
     restore(backupId) {
-        const backupData = localStorage.getItem(backupId);
-        if (!backupData) {
-            console.error(`备份不存在: ${backupId}`);
+        return this.loadFromIndexedDB(backupId).then(backupData => {
+            if (!backupData) {
+                console.error(`备份不存在: ${backupId}`);
+                return false;
+            }
+            
+            return this.loadFromJsonString(backupData);
+        }).catch(error => {
+            console.error('恢复备份失败:', error);
             return false;
-        }
-        
-        return this.loadFromJsonString(backupData);
+        });
     },
     
     // 获取所有备份列表
     getBackupList() {
-        const backups = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('backup_')) {
-                backups.push(key);
+        return new Promise((resolve, reject) => {
+            const backups = [];
+            
+            if (this.db) {
+                const transaction = this.db.transaction([this.STORE_NAME], 'readonly');
+                const store = transaction.objectStore(this.STORE_NAME);
+                const request = store.openCursor();
+                
+                request.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        if (cursor.key.startsWith('backup_')) {
+                            backups.push(cursor.key);
+                        }
+                        cursor.continue();
+                    } else {
+                        resolve(backups.sort().reverse()); // 最新的在前面
+                    }
+                };
+                
+                request.onerror = (event) => {
+                    console.error('获取备份列表失败:', event.target.error);
+                    resolve([]);
+                };
+            } else {
+                // 降级到localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('backup_')) {
+                        backups.push(key);
+                    }
+                }
+                resolve(backups.sort().reverse());
             }
-        }
-        return backups.sort().reverse(); // 最新的在前面
+        });
     },
     
     // 删除备份
     deleteBackup(backupId) {
-        localStorage.removeItem(backupId);
-        console.log(`已删除备份: ${backupId}`);
+        if (this.db) {
+            const transaction = this.db.transaction([this.STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(this.STORE_NAME);
+            const request = store.delete(backupId);
+            
+            request.onsuccess = () => {
+                console.log(`已删除备份: ${backupId}`);
+            };
+            
+            request.onerror = (event) => {
+                console.error('删除备份失败:', event.target.error);
+            };
+        } else {
+            // 降级到localStorage
+            localStorage.removeItem(backupId);
+            console.log(`已删除备份: ${backupId}`);
+        }
+    },
+    
+    // 数据压缩功能（简易实现）
+    compress(data) {
+        try {
+            // 使用JSON.stringify的压缩格式
+            return JSON.stringify(data);
+        } catch (error) {
+            console.error('压缩数据失败:', error);
+            return null;
+        }
+    },
+    
+    // 数据解压功能
+    decompress(compressedData) {
+        try {
+            return JSON.parse(compressedData);
+        } catch (error) {
+            console.error('解压数据失败:', error);
+            return null;
+        }
     }
 };
 
 // 暴露给全局
 window.StorageSystem = StorageSystem;
-
 
 const CutImgSystem = {
     init() {
@@ -14899,10 +15026,23 @@ const ReadJS = {
         const files = e.dataTransfer.files;
         
         for (const file of files) {
-            if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+            if (this.isSupportedTextFile(file)) {
                 this.readTxtFile(file, e.clientX, e.clientY);
             }
         }
+    },
+
+    isSupportedTextFile(file) {
+        const supportedExtensions = ['.txt', '.md', '.markdown', '.js', '.json', '.html', '.css', '.xml', '.yml', '.yaml'];
+        const supportedMimeTypes = ['text/plain', 'text/markdown', 'application/javascript', 'application/json', 'text/html', 'text/css', 'text/xml', 'text/yaml'];
+        
+        // 检查文件扩展名
+        const hasSupportedExtension = supportedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+        
+        // 检查 MIME 类型
+        const hasSupportedMimeType = supportedMimeTypes.includes(file.type);
+        
+        return hasSupportedExtension || hasSupportedMimeType;
     },
 
     readTxtFile(file, clientX, clientY) {
