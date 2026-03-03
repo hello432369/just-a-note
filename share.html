@@ -1,3 +1,4 @@
+<!--更新日期 2026-03-03-->
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -248,6 +249,23 @@ header { position: absolute; background: rgba(37, 37, 38, 0.9); backdrop-filter:
     stroke-linejoin: round;
     pointer-events: none;
     z-index: 8;
+}
+
+/* 视频播放器样式 */
+.video-player {
+    position: absolute;
+    background: rgba(30, 30, 30, 0.9);
+    border: 2px solid #444;
+    border-radius: 8px;
+    z-index: 100;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.video-player:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(0, 122, 204, 0.5);
 }
 
 /* 图片相关样式 */
@@ -530,6 +548,513 @@ header { position: absolute; background: rgba(37, 37, 38, 0.9); backdrop-filter:
 
 #viewport.erasing-active {
     cursor: pointer;
+}
+
+/* 视频转序列帧面板样式 */
+#video-to-sprites-panel {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    overflow: hidden;
+}
+
+#video-to-sprites-panel .panel-content {
+    max-width: 1400px;
+    max-height: 90vh;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#video-to-sprites-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+#video-to-sprites-panel .panel-title {
+    text-align: center;
+    color: #333;
+    margin: 0;
+    font-size: 2.5em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#video-to-sprites-panel .close-btn {
+    padding: 10px 20px;
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#video-to-sprites-panel .close-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+}
+
+#video-to-sprites-panel .upload-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#video-to-sprites-panel .upload-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+#video-to-sprites-panel .upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+#video-to-sprites-panel .progress-container {
+    margin: 20px 0;
+    display: none;
+}
+
+#video-to-sprites-panel .progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #f0f0f0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#video-to-sprites-panel .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+#video-to-sprites-panel .frames-section {
+    display: none;
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 15px;
+    border: 2px dashed #667eea;
+}
+
+#video-to-sprites-panel .frames-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#video-to-sprites-panel .frames-title {
+    font-size: 1.5em;
+    color: #333;
+}
+
+#video-to-sprites-panel .frames-info {
+    color: #666;
+    font-size: 14px;
+}
+
+#video-to-sprites-panel .action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#video-to-sprites-panel .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#video-to-sprites-panel .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+#video-to-sprites-panel .btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+#video-to-sprites-panel .btn-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+#video-to-sprites-panel .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#video-to-sprites-panel .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#video-to-sprites-panel .frames-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 2px solid #f0f0f0;
+    border-radius: 15px;
+    background: white;
+}
+
+#video-to-sprites-panel .selected-frames-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 15px;
+    border: 2px dashed #667eea;
+    display: none;
+}
+
+#video-to-sprites-panel .selected-frames-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#video-to-sprites-panel .selected-frames-title {
+    font-size: 1.3em;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#video-to-sprites-panel .selected-count-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#video-to-sprites-panel .selected-frames-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#video-to-sprites-panel .selected-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+#video-to-sprites-panel .row-label {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+#video-to-sprites-panel .selected-frames-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 80px;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    border: 2px dashed #ccc;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+#video-to-sprites-panel .selected-frames-grid.drag-over {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+#video-to-sprites-panel .empty-selection {
+    width: 100%;
+    text-align: center;
+    color: #999;
+    padding: 30px;
+    font-size: 14px;
+}
+
+#video-to-sprites-panel .preview-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 15px;
+    border: 2px dashed #667eea;
+    display: none;
+}
+
+#video-to-sprites-panel .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#video-to-sprites-panel .preview-title {
+    font-size: 1.5em;
+    color: #333;
+}
+
+#video-to-sprites-panel .preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#video-to-sprites-panel .preview-canvas {
+    max-width: 100%;
+    max-height: 500px;
+}
+
+#video-to-sprites-panel .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#video-to-sprites-panel .loading-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+#video-to-sprites-panel .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#video-to-sprites-panel .loading-text {
+    font-size: 18px;
+    color: #333;
+}
+
+#video-to-sprites-panel .hidden-video {
+    display: none;
+}
+
+#video-to-sprites-panel .frame-item {
+    position: relative;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+#video-to-sprites-panel .frame-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#video-to-sprites-panel .frame-item.selected {
+    border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+#video-to-sprites-panel .frame-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#video-to-sprites-panel .frame-number {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#video-to-sprites-panel .play-order {
+    position: absolute;
+    top: 5px;
+    right: 35px;
+    background: rgba(102, 126, 234, 0.95);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    display: none;
+    min-width: 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+#video-to-sprites-panel .frame-item.selected .play-order {
+    display: block;
+}
+
+#video-to-sprites-panel .frame-check {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background: #667eea;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+#video-to-sprites-panel .frame-item.selected .frame-check {
+    display: flex;
+}
+
+#video-to-sprites-panel .selected-frame-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: grab;
+}
+
+#video-to-sprites-panel .selected-frame-item:active {
+    cursor: grabbing;
+}
+
+#video-to-sprites-panel .selected-frame-item.dragging {
+    opacity: 0.5;
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+#video-to-sprites-panel .selected-frame-item.drag-over {
+    border: 2px dashed #667eea;
+    transform: scale(1.05);
+}
+
+#video-to-sprites-panel .selected-frame-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+#video-to-sprites-panel .selected-frame-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#video-to-sprites-panel .selected-frame-order {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    background: rgba(102, 126, 234, 0.95);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+#video-to-sprites-panel .selected-frame-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 59, 48, 0.9);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#video-to-sprites-panel .selected-frame-item:hover .selected-frame-remove {
+    opacity: 1;
+}
+
+#video-to-sprites-panel input[type="file"] {
+    display: none;
 }</style>
 </head>
 
@@ -547,6 +1072,7 @@ header { position: absolute; background: rgba(37, 37, 38, 0.9); backdrop-filter:
                 <button class="btn-help btn-blue" id="locate-first-node" title="定位到第一个节点"
                     onclick="AudioSystem.playButtonSound()"> 定位 </button>
                 <button class="btn-help btn-green" onclick="AudioSystem.playButtonSound(); CutImgSystem.showPanel('split')"> 切图 </button>
+                <button class="btn-help btn-yellow" onclick="AudioSystem.playButtonSound(); VideoToSpritesSystem.showPanel()"> 抽帧 </button>
                 <button class="btn-help btn-red" onclick="AudioSystem.playButtonSound(); HelpSystem.showHelp()">设置</button>
                 
                 <input type="file" id="json-import" accept=".json" style="display: none;"
@@ -743,10 +1269,114 @@ header { position: absolute; background: rgba(37, 37, 38, 0.9); backdrop-filter:
 
     </div>
 
+    <!-- 视频转序列帧面板 -->
+    <div id="video-to-sprites-panel">
+        <div class="panel-content">
+            <div class="panel-header">
+                <h1 class="panel-title">🎬 视频转序列图</h1>
+                <button class="close-btn" onclick="VideoToSpritesSystem.hidePanel()">关闭</button>
+            </div>
+            
+            <div class="upload-section">
+                <input type="file" id="videoInput" accept="video/*">
+                <button class="upload-btn" onclick="document.getElementById('videoInput').click()">
+                    📁 上传视频
+                </button>
+                
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="frames-section" id="framesSection">
+                <div class="frames-header">
+                    <div>
+                        <div class="frames-title">序列帧列表</div>
+                        <div class="frames-info" id="framesInfo">共 0 帧，已选择 0 帧</div>
+                    </div>
+                    <div class="action-buttons">
+                        <div style="display: inline-flex; align-items: center; gap: 8px; margin-right: 10px; background: linear-gradient(135deg, #4CAF50, #45a049); padding: 6px 12px; border-radius: 6px;">
+                            <span style="font-size: 16px;">🔍</span>
+                            <input type="range" id="frameZoomSlider" min="1" max="4" step="0.5" value="1" 
+                                style="width: 100px; cursor: pointer; accent-color: #fff;"
+                                onchange="VideoToSpritesSystem.setFrameZoom(this.value)">
+                            <span id="frameZoomValue" style="font-size: 16px; color: #fff; font-weight: bold; min-width: 40px;">1x</span>
+                        </div>
+                        <button class="btn btn-warning" onclick="VideoToSpritesSystem.clearSelection()" id="clearSelectionBtn">
+                            🗑️ 清空选择
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="frames-grid" id="framesGrid"></div>
+            </div>
+
+            <div class="selected-frames-section" id="selectedFramesSection">
+                <div class="selected-frames-header">
+                    <div class="selected-frames-title">
+                        🖼️ 已选择的序列帧
+                        <span class="selected-count-badge" id="selectedCountBadge">0 帧</span>
+                    </div>
+                    <div class="action-buttons">
+                        <div style="display: inline-flex; align-items: center; gap: 8px; margin-right: 10px; background: linear-gradient(135deg, #2196F3, #1976D2); padding: 6px 12px; border-radius: 6px;">
+                            <span style="font-size: 16px;">🔍</span>
+                            <input type="range" id="selectedZoomSlider" min="1" max="4" step="0.5" value="1" 
+                                style="width: 100px; cursor: pointer; accent-color: #fff;"
+                                onchange="VideoToSpritesSystem.setSelectedZoom(this.value)">
+                            <span id="selectedZoomValue" style="font-size: 16px; color: #fff; font-weight: bold; min-width: 40px;">1x</span>
+                        </div>
+                        <button class="btn btn-primary" id="playBtn" onclick="VideoToSpritesSystem.playSelectedFrames()" disabled>
+                            ▶️ 播放选中
+                        </button>
+                    </div>
+                </div>
+                <div class="selected-frames-container">
+                    <div class="selected-row">
+                        <div class="row-label">上行</div>
+                        <div class="selected-frames-grid" id="selectedFramesRow1"></div>
+                    </div>
+                    <div class="selected-row">
+                        <div class="row-label">下行</div>
+                        <div class="selected-frames-grid" id="selectedFramesRow2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section" id="previewSection">
+                <div class="preview-header">
+                    <div class="preview-title">预览播放</div>
+                    <div class="action-buttons">
+                        <label class="matting-checkbox" style="display: inline-flex; align-items: center; gap: 6px; margin-right: 15px; cursor: pointer; background: linear-gradient(135deg, #FF6B6B, #ee5a5a); padding: 8px 16px; border-radius: 6px; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);">
+                            <input type="checkbox" id="mattingMode" checked style="cursor: pointer; width: 18px; height: 18px; accent-color: #fff;">
+                            <span>抠图</span>
+                        </label>
+                        <button class="btn btn-success" id="downloadStripBtn" onclick="VideoToSpritesSystem.downloadStrip()" disabled>
+                            📥 下载序列图
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <canvas id="previewCanvas" class="preview-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">处理中...</div>
+        </div>
+    </div>
+
+    <video id="hiddenVideo" class="hidden-video" crossorigin="anonymous"></video>
 
 
 
-                                                                            
+
+                                                                                
     <script>
         // 等待DOM加载完成后初始化系统
         document.addEventListener('DOMContentLoaded', function() {
@@ -1979,12 +2609,17 @@ window.MusicSystem = MusicSystem;
 
 // video.js - 视频播放模块
 const VideoSystem = {
-    // 视频播放器列表
     videoPlayers: [],
-    // 是否允许多个视频同时播放
     allowMultiplePlayback: false,
+    gridMode: false,
+    gridColumns: 3,
+    objectUrls: [],
+    loadedVideos: new Set(),
+    lazyLoadEnabled: false,
+    intersectionObserver: null,
+    autoArrange: true,
+    videoCounter: 0,
     
-    // 生成随机颜色（使用HSL模式）
     getRandomColor() {
         const hue = Math.floor(Math.random() * 360);
         const saturation = 70 + Math.floor(Math.random() * 30);
@@ -1992,11 +2627,12 @@ const VideoSystem = {
         return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
     },
     
-    // 初始化视频系统
     init() {
         console.log('=== VideoSystem: 初始化视频系统 ===');
         this.loadFromLocalStorage();
         this.initDragAndDrop();
+        // this.initGridMode(); // 注释掉，不创建网格、懒加载、排列按钮
+        this.initLazyLoading();
     },
     
     // 初始化拖拽功能
@@ -2083,7 +2719,6 @@ const VideoSystem = {
         this.videoPlayers = [];
     },
     
-    // 恢复视频播放器
     restoreVideoPlayer(playerData, fragment) {
         console.log('VideoSystem: 恢复视频播放器:', playerData.id);
         
@@ -2093,7 +2728,6 @@ const VideoSystem = {
             videoContainer.id = playerId;
             videoContainer.className = 'video-player';
             
-            // 批量设置样式，减少重排
             Object.assign(videoContainer.style, {
                 position: 'absolute',
                 width: '200px',
@@ -2113,123 +2747,26 @@ const VideoSystem = {
                 top: playerData.y + 'px'
             });
             
-            // 创建视频元素
             const videoElement = document.createElement('video');
-            videoElement.src = playerData.videoUrl;
-            videoElement.loop = true; // 默认无限循环播放
+            videoElement.dataset.src = playerData.videoUrl;
+            videoElement.preload = 'metadata';
+            videoElement.loop = true;
             videoElement.style.width = '100%';
             videoElement.style.height = '100%';
             videoElement.style.objectFit = 'contain';
             videoElement.style.backgroundColor = 'black';
             
-            // 监听视频元数据加载，调整播放器大小
-            videoElement.addEventListener('loadedmetadata', () => {
-                // 获取视频的实际宽高和比例
-                const videoWidth = videoElement.videoWidth;
-                const videoHeight = videoElement.videoHeight;
-                const aspectRatio = videoWidth / videoHeight;
-                
-                // 计算合适的播放器尺寸
-                // 基于视频原始大小，但设置合理的限制
-                const maxDimension = 800; // 最大宽度或高度
-                const minDimension = 200; // 最小宽度或高度
-                
-                let finalWidth, finalVideoHeight;
-                
-                if (videoWidth > videoHeight) {
-                    // 横屏视频
-                    finalWidth = Math.max(minDimension, Math.min(maxDimension, videoWidth));
-                    finalVideoHeight = finalWidth / aspectRatio;
-                } else {
-                    // 竖屏视频
-                    finalVideoHeight = Math.max(minDimension, Math.min(maxDimension, videoHeight));
-                    finalWidth = finalVideoHeight * aspectRatio;
-                }
-                
-                // 确保尺寸在合理范围内
-                finalWidth = Math.max(minDimension, Math.min(maxDimension, finalWidth));
-                finalVideoHeight = Math.max(minDimension, Math.min(maxDimension, finalVideoHeight));
-                
-                // 调整播放器容器大小
-                videoContainer.style.width = finalWidth + 'px';
-                videoContainer.style.height = finalVideoHeight + 'px';
-                
-                // 调整视频元素大小
-                videoElement.style.width = '100%';
-                videoElement.style.height = '100%';
-                
-                console.log(`VideoSystem: 视频大小调整 - 原始: ${videoWidth}x${videoHeight}, 比例: ${aspectRatio.toFixed(2)}, 调整后: ${Math.round(finalWidth)}x${Math.round(finalVideoHeight)}`);
-            });
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'video-loading';
+            loadingIndicator.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">加载中...</div>';
+            loadingIndicator.style.cssText = 'position:absolute; inset:0; background:rgba(0,0,0,0.7); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; border-radius:8px;';
             
-            // 添加拖拽功能到视频容器
-            let isDragging = false;
-            let startX, startY;
-            let startLeft, startTop;
-            
-            videoContainer.addEventListener('mousedown', (e) => {
-                e.stopPropagation();
-                if (e.button === 0) { // 只处理左键
-                    isDragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    startLeft = parseInt(videoContainer.style.left) || 0;
-                    startTop = parseInt(videoContainer.style.top) || 0;
-                    videoContainer.style.zIndex = '2000'; // 拖拽时置于顶层
-                }
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    // 考虑缩放和平移
-                    const container = document.getElementById('container');
-                    if (container && window.app) {
-                        // 使用movementX/movementY获取更准确的鼠标移动距离
-                        // 考虑缩放比例，将屏幕移动距离转换为世界坐标
-                        const worldX = e.movementX / app.zoom;
-                        const worldY = e.movementY / app.zoom;
-                        
-                        // 获取当前位置
-                        const currentX = parseInt(videoContainer.style.left || 0);
-                        const currentY = parseInt(videoContainer.style.top || 0);
-                        
-                        // 计算新位置
-                        const newX = currentX + worldX;
-                        const newY = currentY + worldY;
-                        
-                        videoContainer.style.left = newX + 'px';
-                        videoContainer.style.top = newY + 'px';
-                    } else {
-                        // 获取当前位置
-                        const currentX = parseInt(videoContainer.style.left || 0);
-                        const currentY = parseInt(videoContainer.style.top || 0);
-                        
-                        // 计算新位置
-                        const newX = currentX + e.movementX;
-                        const newY = currentY + e.movementY;
-                        
-                        videoContainer.style.left = newX + 'px';
-                        videoContainer.style.top = newY + 'px';
-                    }
-                }
-            });
-            
-            document.addEventListener('mouseup', () => {
-                if (isDragging) {
-                    isDragging = false;
-                    videoContainer.style.zIndex = '1000'; // 恢复正常层级
-                    // 禁用保存，避免卡顿
-                    // 位置信息会在导出时保存
-                }
-            });
-            
-            // 添加到容器
+            videoContainer.appendChild(loadingIndicator);
             videoContainer.appendChild(videoElement);
             
-            // 添加到DocumentFragment或直接添加到DOM
             if (fragment) {
                 fragment.appendChild(videoContainer);
             } else {
-                // 添加到nodes-layer
                 const nodesLayer = document.getElementById('nodes-layer');
                 if (nodesLayer) {
                     nodesLayer.appendChild(videoContainer);
@@ -2238,38 +2775,25 @@ const VideoSystem = {
                 }
             }
             
-            // 存储播放器信息
             const playerInfo = {
                 id: playerId,
                 element: videoContainer,
                 video: videoElement,
+                loadingIndicator: loadingIndicator,
                 isPlaying: playerData.isPlaying,
                 currentTime: playerData.currentTime
             };
             this.videoPlayers.push(playerInfo);
             
-            // 播放/暂停事件
-            videoContainer.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.toggleVideoPlayback(playerId);
-            });
-            
-            // 视频事件
-            videoElement.addEventListener('timeupdate', () => {
-                playerInfo.currentTime = videoElement.currentTime;
-                // 禁用实时保存，避免卡顿
-                // 只在必要时（如拖拽结束、播放状态改变）进行保存
-            });
-            
-            // 监听视频结束事件
-            videoElement.addEventListener('ended', () => {
-                playerInfo.isPlaying = false;
-                console.log(`VideoSystem: 视频播放结束 - ${playerId}`);
-                // 禁用保存，避免卡顿
-            });
-            
-            // 右键删除功能
+            this.setupVideoEvents(videoElement, playerInfo, loadingIndicator);
+            this.setupDragAndDrop(videoContainer, playerInfo);
             this.setupRightClickDelete(videoContainer, playerId);
+            
+            if (this.lazyLoadEnabled) {
+                this.observeVideo(playerInfo);
+            } else {
+                videoElement.src = playerData.videoUrl;
+            }
             
             console.log('VideoSystem: 播放器恢复成功:', playerId);
         } catch (error) {
@@ -2347,31 +2871,19 @@ const VideoSystem = {
         console.log('VideoSystem: 已添加body拖拽事件');
     },
     
-    // 处理视频文件拖拽
     handleVideoFileDrop(file, x, y) {
         console.log('VideoSystem: 处理视频文件:', file.name);
         
         try {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const videoUrl = event.target.result;
-                    this.createVideoPlayer(videoUrl, x, y);
-                } catch (error) {
-                    console.error('VideoSystem: 处理视频URL失败:', error);
-                }
-            };
-            reader.onerror = (error) => {
-                console.error('VideoSystem: 文件读取失败:', error);
-            };
-            reader.readAsDataURL(file);
+            const videoUrl = URL.createObjectURL(file);
+            this.objectUrls.push(videoUrl);
+            this.createVideoPlayer(videoUrl, x, y, file.name);
         } catch (error) {
             console.error('VideoSystem: 初始化文件读取失败:', error);
         }
     },
     
-    // 创建视频播放器
-    createVideoPlayer(videoUrl, x, y) {
+    createVideoPlayer(videoUrl, x, y, fileName = '') {
         console.log('VideoSystem: 创建视频播放器');
         
         try {
@@ -2380,7 +2892,6 @@ const VideoSystem = {
             videoContainer.id = playerId;
             videoContainer.className = 'video-player';
             
-            // 批量设置样式
             Object.assign(videoContainer.style, {
                 position: 'absolute',
                 width: '200px',
@@ -2398,197 +2909,393 @@ const VideoSystem = {
                 overflow: 'hidden'
             });
             
-            // 计算位置
-            const container = document.getElementById('container');
-            if (container) {
-                const rect = container.getBoundingClientRect();
-                // 计算相对于container的坐标
-                const containerX = x - rect.left;
-                const containerY = y - rect.top;
-                
-                // 考虑当前的缩放和平移值（从app对象获取）
-                if (window.app) {
-                    // 转换为世界坐标
-                    const worldX = (containerX - app.panX) / app.zoom;
-                    const worldY = (containerY - app.panY) / app.zoom;
-                    videoContainer.style.left = worldX + 'px';
-                    videoContainer.style.top = worldY + 'px';
-                    console.log(`VideoSystem: 位置计算 - 鼠标: ${x},${y}, 容器: ${containerX},${containerY}, 世界: ${worldX},${worldY}, 缩放: ${app.zoom}, 平移: ${app.panX},${app.panY}`);
-                } else {
-                    // 如果app对象不存在，使用原始计算
-                    videoContainer.style.left = containerX + 'px';
-                    videoContainer.style.top = containerY + 'px';
-                    console.log(`VideoSystem: 位置计算 - 鼠标: ${x},${y}, 容器: ${containerX},${containerY}`);
-                }
-            } else {
-                videoContainer.style.left = x + 'px';
-                videoContainer.style.top = y + 'px';
-                console.log(`VideoSystem: 位置计算 - 鼠标: ${x},${y}`);
-            }
-            
-            // 创建视频元素
             const videoElement = document.createElement('video');
-            videoElement.src = videoUrl;
-            videoElement.loop = true; // 默认无限循环播放
-            // 根据多视频播放状态设置静音
+            videoElement.dataset.src = videoUrl;
+            videoElement.preload = 'auto';
+            videoElement.loop = true;
             videoElement.muted = this.allowMultiplePlayback;
             videoElement.style.width = '100%';
             videoElement.style.height = '100%';
             videoElement.style.objectFit = 'contain';
             videoElement.style.backgroundColor = 'black';
+            videoElement.playsInline = true;
             
-            // 监听视频元数据加载，调整播放器大小
-            videoElement.addEventListener('loadedmetadata', () => {
-                // 获取视频的实际宽高和比例
-                const videoWidth = videoElement.videoWidth;
-                const videoHeight = videoElement.videoHeight;
-                const aspectRatio = videoWidth / videoHeight;
-                
-                // 计算合适的播放器尺寸
-                // 基于视频原始大小，但设置合理的限制
-                const maxDimension = 800; // 最大宽度或高度
-                const minDimension = 200; // 最小宽度或高度
-                
-                let finalWidth, finalVideoHeight;
-                
-                if (videoWidth > videoHeight) {
-                    // 横屏视频
-                    finalWidth = Math.max(minDimension, Math.min(maxDimension, videoWidth));
-                    finalVideoHeight = finalWidth / aspectRatio;
-                } else {
-                    // 竖屏视频
-                    finalVideoHeight = Math.max(minDimension, Math.min(maxDimension, videoHeight));
-                    finalWidth = finalVideoHeight * aspectRatio;
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'video-loading';
+            loadingIndicator.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">加载中...</div>';
+            loadingIndicator.style.cssText = 'position:absolute; inset:0; background:rgba(0,0,0,0.7); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; border-radius:8px;';
+            
+            const titleBar = document.createElement('div');
+            titleBar.className = 'video-title';
+            titleBar.style.cssText = 'position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:white; padding:6px 10px; font-size:11px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:0 0 6px 6px; opacity:1; transition:opacity 0.2s ease; pointer-events:none;';
+            titleBar.textContent = fileName || '视频 ' + (this.videoPlayers.length + 1);
+            
+            const spinnerStyle = document.createElement('style');
+            spinnerStyle.textContent = `
+                .loading-spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid rgba(255,255,255,0.3);
+                    border-top-color: #fff;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
                 }
-                
-                // 确保尺寸在合理范围内
-                finalWidth = Math.max(minDimension, Math.min(maxDimension, finalWidth));
-                finalVideoHeight = Math.max(minDimension, Math.min(maxDimension, finalVideoHeight));
-                
-                // 调整播放器容器大小
-                videoContainer.style.width = finalWidth + 'px';
-                videoContainer.style.height = finalVideoHeight + 'px';
-                
-                // 调整视频元素大小
-                videoElement.style.width = '100%';
-                videoElement.style.height = '100%';
-                
-                console.log(`VideoSystem: 视频大小调整 - 原始: ${videoWidth}x${videoHeight}, 比例: ${aspectRatio.toFixed(2)}, 调整后: ${Math.round(finalWidth)}x${Math.round(finalVideoHeight)}`);
-            });
-            
-            // 添加拖拽功能到视频容器
-            let isDragging = false;
-            let startX, startY;
-            let startLeft, startTop;
-            
-            videoContainer.addEventListener('mousedown', (e) => {
-                e.stopPropagation();
-                if (e.button === 0) { // 只处理左键
-                    isDragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    startLeft = parseInt(videoContainer.style.left) || 0;
-                    startTop = parseInt(videoContainer.style.top) || 0;
-                    videoContainer.style.zIndex = '2000'; // 拖拽时置于顶层
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
                 }
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const dx = e.clientX - startX;
-                    const dy = e.clientY - startY;
-                    
-                    // 考虑缩放和平移
-                    const container = document.getElementById('container');
-                    if (container && window.app) {
-                        // 鼠标移动的距离已经是相对于容器的，只需要考虑缩放因子
-                        const worldX = dx / app.zoom;
-                        const worldY = dy / app.zoom;
-                        
-                        videoContainer.style.left = (startLeft + worldX) + 'px';
-                        videoContainer.style.top = (startTop + worldY) + 'px';
-                    } else {
-                        videoContainer.style.left = (startLeft + dx) + 'px';
-                        videoContainer.style.top = (startTop + dy) + 'px';
-                    }
+                .loading-text {
+                    color: white;
+                    margin-top: 10px;
+                    font-size: 12px;
                 }
-            });
+            `;
+            document.head.appendChild(spinnerStyle);
             
-            document.addEventListener('mouseup', () => {
-                if (isDragging) {
-                    isDragging = false;
-                    videoContainer.style.zIndex = '1000'; // 恢复正常层级
-                    // 保存状态
-                    this.saveToLocalStorage();
-                }
-            });
-            
-            // 添加到容器
+            videoContainer.appendChild(loadingIndicator);
             videoContainer.appendChild(videoElement);
+            videoContainer.appendChild(titleBar);
             
-            // 添加到nodes-layer
             const nodesLayer = document.getElementById('nodes-layer');
             const targetContainer = nodesLayer || document.body;
             targetContainer.appendChild(videoContainer);
             
-            // 存储播放器信息
             const playerInfo = {
                 id: playerId,
                 element: videoContainer,
                 video: videoElement,
+                loadingIndicator: loadingIndicator,
+                titleBar: titleBar,
                 isPlaying: false,
-                currentTime: 0
+                currentTime: 0,
+                fileName: fileName,
+                width: 200,
+                height: 160
             };
             this.videoPlayers.push(playerInfo);
             
-            // 播放/暂停事件
-            videoContainer.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.toggleVideoPlayback(playerId);
-            });
-            
-            // 视频事件
-            videoElement.addEventListener('timeupdate', () => {
-                playerInfo.currentTime = videoElement.currentTime;
-                // 定期保存 - 进一步减少频率，避免性能问题
-                if (Math.random() < 0.001) { // 0.1% 的概率保存
-                    if (window.StorageSystem) {
-                        window.StorageSystem.save();
-                    }
-                }
-            });
-            
-            // 监听视频结束事件
-            videoElement.addEventListener('ended', () => {
-                playerInfo.isPlaying = false;
-                console.log(`VideoSystem: 视频播放结束 - ${playerId}`);
-                // 保存状态
-                this.saveToLocalStorage();
-            });
-            
-            // 右键删除功能
+            this.setupVideoEvents(videoElement, playerInfo, loadingIndicator);
+            this.setupDragAndDrop(videoContainer, playerInfo);
             this.setupRightClickDelete(videoContainer, playerId);
             
-            console.log('VideoSystem: 播放器创建成功:', playerId);
+            if (this.lazyLoadEnabled) {
+                this.observeVideo(playerInfo);
+            } else {
+                videoElement.src = videoUrl;
+                console.log('VideoSystem: 立即加载视频:', playerId);
+            }
             
-            // 保存到本地存储
-            this.saveToLocalStorage();
+            // 不自动排列所有视频，避免影响已有视频的位置
+            // this.arrangeVideos();
+            
+            // 新视频默认放置在指定位置或按照原有间距规则放置
+            if (x && y) {
+                videoContainer.style.left = x + 'px';
+                videoContainer.style.top = y + 'px';
+            } else {
+                // 计算新视频的位置，确保不与已有视频重叠
+                const gap = 20;
+                const startX = 50;
+                const startY = 50;
+                const containerWidth = window.innerWidth - 100;
+                const defaultWidth = 200;
+                const defaultHeight = 160;
+                
+                let currentX = startX;
+                let currentY = startY;
+                
+                // 找到所有已有视频的位置
+                const existingPlayers = this.videoPlayers.filter(p => p.id !== playerInfo.id);
+                
+                if (existingPlayers.length > 0) {
+                    // 计算当前所有视频占用的空间
+                    let maxX = 0;
+                    let maxY = 0;
+                    
+                    existingPlayers.forEach(player => {
+                        const left = parseInt(player.element.style.left) || 0;
+                        const top = parseInt(player.element.style.top) || 0;
+                        const width = player.width || defaultWidth;
+                        const height = player.height || defaultHeight;
+                        
+                        maxX = Math.max(maxX, left + width);
+                        maxY = Math.max(maxY, top + height);
+                    });
+                    
+                    // 计算下一个位置
+                    currentX = maxX + gap;
+                    currentY = startY;
+                    
+                    // 检查是否超出容器宽度
+                    if (currentX + defaultWidth > containerWidth) {
+                        currentX = startX;
+                        currentY = maxY + gap;
+                    }
+                }
+                
+                // 设置新视频的位置
+                videoContainer.style.left = currentX + 'px';
+                videoContainer.style.top = currentY + 'px';
+                console.log(`VideoSystem: 新视频初始位置 - 位置:(${Math.round(currentX)}, ${Math.round(currentY)})`);
+            }
+            
+            console.log('VideoSystem: 播放器创建成功:', playerId);
         } catch (error) {
             console.error('VideoSystem: 创建播放器失败:', error);
         }
     },
     
-    // 切换视频播放状态
+    setupVideoEvents(videoElement, playerInfo, loadingIndicator) {
+        // 首次加载标志
+        let isFirstLoad = true;
+        
+        videoElement.addEventListener('loadstart', () => {
+            // 只有首次加载时显示加载动画
+            if (isFirstLoad) {
+                loadingIndicator.style.display = 'flex';
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '开始加载...';
+            }
+        });
+        
+        videoElement.addEventListener('progress', () => {
+            if (videoElement.buffered.length > 0) {
+                const buffered = videoElement.buffered.end(0);
+                const duration = videoElement.duration || 1;
+                const percent = Math.round((buffered / duration) * 100);
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText && percent < 100 && isFirstLoad) {
+                    loadingText.textContent = `缓冲中... ${percent}%`;
+                }
+            }
+        });
+        
+        videoElement.addEventListener('loadedmetadata', () => {
+            if (isFirstLoad) {
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '准备播放...';
+            }
+            
+            const videoWidth = videoElement.videoWidth;
+            const videoHeight = videoElement.videoHeight;
+            const aspectRatio = videoWidth / videoHeight;
+            const maxDimension = 800;
+            const minDimension = 200;
+            
+            let finalWidth, finalVideoHeight;
+            
+            if (videoWidth > videoHeight) {
+                finalWidth = Math.max(minDimension, Math.min(maxDimension, videoWidth));
+                finalVideoHeight = finalWidth / aspectRatio;
+            } else {
+                finalVideoHeight = Math.max(minDimension, Math.min(maxDimension, videoHeight));
+                finalWidth = finalVideoHeight * aspectRatio;
+            }
+            
+            finalWidth = Math.max(minDimension, Math.min(maxDimension, finalWidth));
+            finalVideoHeight = Math.max(minDimension, Math.min(maxDimension, finalVideoHeight));
+            
+            playerInfo.element.style.width = finalWidth + 'px';
+            playerInfo.element.style.height = finalVideoHeight + 'px';
+            playerInfo.width = finalWidth;
+            playerInfo.height = finalVideoHeight;
+            
+            console.log(`VideoSystem: 视频大小调整 - 原始: ${videoWidth}x${videoHeight}, 调整后: ${Math.round(finalWidth)}x${Math.round(finalVideoHeight)}`);
+            
+            // 视频加载完成后，根据实际宽高重新调整位置
+            setTimeout(() => {
+                // 只调整当前视频的位置，不影响其他视频
+                if (playerInfo.element) {
+                    // 计算新视频的位置，确保不与已有视频重叠
+                    const gap = 20;
+                    const startX = 50;
+                    const startY = 50;
+                    const containerWidth = window.innerWidth - 100;
+                    
+                    let currentX = startX;
+                    let currentY = startY;
+                    
+                    // 找到所有已有视频的位置
+                    const existingPlayers = this.videoPlayers.filter(p => p.id !== playerInfo.id);
+                    
+                    if (existingPlayers.length > 0) {
+                        // 计算当前所有视频占用的空间
+                        let maxX = 0;
+                        let maxY = 0;
+                        
+                        existingPlayers.forEach(player => {
+                            const left = parseInt(player.element.style.left) || 0;
+                            const top = parseInt(player.element.style.top) || 0;
+                            const width = player.width || 200;
+                            const height = player.height || 160;
+                            
+                            maxX = Math.max(maxX, left + width);
+                            maxY = Math.max(maxY, top + height);
+                        });
+                        
+                        // 计算下一个位置
+                        currentX = maxX + gap;
+                        currentY = startY;
+                        
+                        // 检查是否超出容器宽度
+                        const width = playerInfo.width || 200;
+                        if (currentX + width > containerWidth) {
+                            currentX = startX;
+                            currentY = maxY + gap;
+                        }
+                    }
+                    
+                    // 设置新视频的位置
+                    playerInfo.element.style.left = currentX + 'px';
+                    playerInfo.element.style.top = currentY + 'px';
+                    console.log(`VideoSystem: 视频位置调整 - 宽:${Math.round(playerInfo.width || 200)}, 高:${Math.round(playerInfo.height || 160)}, 位置:(${Math.round(currentX)}, ${Math.round(currentY)})`);
+                }
+            }, 50);
+        });
+        
+        videoElement.addEventListener('canplay', () => {
+            loadingIndicator.style.display = 'none';
+            if (playerInfo.titleBar && !playerInfo.isPlaying) {
+                playerInfo.titleBar.style.opacity = '1';
+            }
+            // 首次加载完成
+            isFirstLoad = false;
+        });
+        
+        videoElement.addEventListener('canplaythrough', () => {
+            loadingIndicator.style.display = 'none';
+        });
+        
+        videoElement.addEventListener('waiting', () => {
+            // 循环播放时不显示加载动画
+            if (isFirstLoad) {
+                loadingIndicator.style.display = 'flex';
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '缓冲中...';
+            }
+        });
+        
+        videoElement.addEventListener('stalled', () => {
+            // 循环播放时不显示加载状态
+            if (isFirstLoad) {
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '网络缓慢...';
+            }
+        });
+        
+        videoElement.addEventListener('suspend', () => {
+            // 循环播放时不显示加载状态
+            if (isFirstLoad) {
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '暂停加载';
+            }
+        });
+        
+        videoElement.addEventListener('abort', () => {
+            // 循环播放时不显示加载状态
+            if (isFirstLoad) {
+                const loadingText = loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '加载已取消';
+            }
+        });
+        
+        videoElement.addEventListener('error', () => {
+            loadingIndicator.style.display = 'flex';
+            const loadingText = loadingIndicator.querySelector('.loading-text');
+            if (loadingText) loadingText.textContent = '加载失败';
+            console.error('VideoSystem: 视频加载错误', playerInfo.id, videoElement.error);
+        });
+        
+        videoElement.addEventListener('timeupdate', () => {
+            playerInfo.currentTime = videoElement.currentTime;
+        });
+        
+        videoElement.addEventListener('ended', () => {
+            // 循环播放时保持isPlaying为true
+            if (videoElement.loop) {
+                playerInfo.isPlaying = true;
+                console.log(`VideoSystem: 视频循环播放 - ${playerInfo.id}`);
+            } else {
+                playerInfo.isPlaying = false;
+                console.log(`VideoSystem: 视频播放结束 - ${playerInfo.id}`);
+            }
+        });
+        
+        playerInfo.element.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleVideoPlayback(playerInfo.id);
+        });
+    },
+    
+    setupDragAndDrop(videoContainer, playerInfo) {
+        let isDragging = false;
+        let startX, startY;
+        let startLeft, startTop;
+        let dragStartTime = 0;
+        let lastUpdateTime = 0;
+        
+        videoContainer.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            if (e.button === 0) {
+                isDragging = true;
+                dragStartTime = Date.now();
+                startX = e.clientX;
+                startY = e.clientY;
+                startLeft = parseInt(videoContainer.style.left) || 0;
+                startTop = parseInt(videoContainer.style.top) || 0;
+                videoContainer.style.zIndex = '2000';
+                videoContainer.style.cursor = 'grabbing';
+                videoContainer.style.transition = 'none';
+            }
+        });
+        
+        const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            
+            const now = Date.now();
+            if (now - lastUpdateTime < 16) return;
+            lastUpdateTime = now;
+            
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
+            const container = document.getElementById('container');
+            if (container && window.app) {
+                const worldDx = dx / app.zoom;
+                const worldDy = dy / app.zoom;
+                videoContainer.style.left = (startLeft + worldDx) + 'px';
+                videoContainer.style.top = (startTop + worldDy) + 'px';
+            } else {
+                videoContainer.style.left = (startLeft + dx) + 'px';
+                videoContainer.style.top = (startTop + dy) + 'px';
+            }
+        };
+        
+        const handleMouseUp = () => {
+            if (isDragging) {
+                isDragging = false;
+                videoContainer.style.zIndex = '1000';
+                videoContainer.style.cursor = 'pointer';
+                videoContainer.style.transition = 'all 0.1s ease';
+                console.log('VideoSystem: 拖拽完成，耗时:', Date.now() - dragStartTime, 'ms');
+            }
+        };
+        
+        document.addEventListener('mousemove', handleMouseMove, { passive: true });
+        document.addEventListener('mouseup', handleMouseUp, { passive: true });
+        
+        playerInfo.dragHandlers = { handleMouseMove, handleMouseUp };
+    },
+    
     toggleVideoPlayback(playerId) {
         const player = this.videoPlayers.find(p => p.id === playerId);
         if (!player) return;
         
-        // 只有在不允许多个视频同时播放时，才暂停其他视频
         if (!this.allowMultiplePlayback) {
             this.videoPlayers.forEach(p => {
                 if (p.id !== playerId && p.isPlaying) {
                     p.video.pause();
                     p.isPlaying = false;
+                    if (p.titleBar) p.titleBar.style.opacity = '1';
                 }
             });
         }
@@ -2596,20 +3303,17 @@ const VideoSystem = {
         if (player.isPlaying) {
             player.video.pause();
             player.isPlaying = false;
+            if (player.titleBar) player.titleBar.style.opacity = '1';
         } else {
-            // 从上次位置继续播放
             if (player.currentTime > 0) {
                 player.video.currentTime = player.currentTime;
             }
             player.video.play();
             player.isPlaying = true;
+            if (player.titleBar) player.titleBar.style.opacity = '0';
         }
-        
-        // 保存到本地存储
-        this.saveToLocalStorage();
     },
     
-    // 移除视频播放器
     removeVideoPlayer(playerId) {
         console.log('VideoSystem: 移除视频播放器:', playerId);
         const index = this.videoPlayers.findIndex(p => p.id === playerId);
@@ -2618,17 +3322,22 @@ const VideoSystem = {
             if (player.video) {
                 player.video.pause();
             }
+            if (this.lazyLoadEnabled) {
+                this.unobserveVideo(player);
+            }
+            if (player.dragHandlers) {
+                document.removeEventListener('mousemove', player.dragHandlers.handleMouseMove);
+                document.removeEventListener('mouseup', player.dragHandlers.handleMouseUp);
+            }
             if (player.element && player.element.parentNode) {
                 player.element.parentNode.removeChild(player.element);
             }
             if (player.video && player.video.parentNode) {
                 player.video.parentNode.removeChild(player.video);
             }
+            this.loadedVideos.delete(playerId);
             this.videoPlayers.splice(index, 1);
             console.log('VideoSystem: 播放器移除成功');
-            
-            // 保存到本地存储
-            this.saveToLocalStorage();
         }
     },
     
@@ -2666,6 +3375,221 @@ const VideoSystem = {
         document.addEventListener('mouseup', () => {
             isDragging = false;
         });
+    },
+    
+    initGridMode() {
+        const gridBtn = document.createElement('button');
+        gridBtn.className = 'btn-help btn-blue';
+        gridBtn.innerHTML = '网格';
+        gridBtn.title = '切换网格布局模式';
+        gridBtn.onclick = () => {
+            AudioSystem && AudioSystem.playButtonSound();
+            this.toggleGridMode();
+        };
+        
+        const lazyBtn = document.createElement('button');
+        lazyBtn.className = 'btn-help btn-green';
+        lazyBtn.innerHTML = '懒加载';
+        lazyBtn.title = '切换视频懒加载';
+        lazyBtn.onclick = () => {
+            AudioSystem && AudioSystem.playButtonSound();
+            const enabled = this.toggleLazyLoading();
+            lazyBtn.innerHTML = enabled ? '懒加载' : '全部加载';
+            lazyBtn.className = enabled ? 'btn-help btn-green' : 'btn-help btn-yellow';
+        };
+        
+        const arrangeBtn = document.createElement('button');
+        arrangeBtn.className = 'btn-help btn-purple';
+        arrangeBtn.innerHTML = '排列';
+        arrangeBtn.title = '切换自动排列';
+        arrangeBtn.onclick = () => {
+            AudioSystem && AudioSystem.playButtonSound();
+            this.autoArrange = !this.autoArrange;
+            arrangeBtn.className = this.autoArrange ? 'btn-help btn-purple' : 'btn-help btn-gray';
+            console.log('VideoSystem: 自动排列:', this.autoArrange);
+        };
+        
+        const navLeft = document.querySelector('.nav-left');
+        if (navLeft) {
+            navLeft.appendChild(gridBtn);
+            navLeft.appendChild(lazyBtn);
+            navLeft.appendChild(arrangeBtn);
+        }
+    },
+    
+    toggleGridMode() {
+        this.gridMode = !this.gridMode;
+        console.log('VideoSystem: 网格模式:', this.gridMode);
+        
+        if (this.gridMode) {
+            this.arrangeInGrid();
+        }
+        
+        return this.gridMode;
+    },
+    
+    arrangeInGrid() {
+        this.arrangeVideos();
+    },
+    
+    arrangeVideos() {
+        if (this.videoPlayers.length === 0) return;
+        
+        const gap = 20;
+        const startX = 50;
+        const startY = 50;
+        const containerWidth = window.innerWidth - 100;
+        
+        let currentX = startX;
+        let currentY = startY;
+        let maxHeightInRow = 0;
+        
+        this.videoPlayers.forEach((player, index) => {
+            const width = player.width || 200;
+            const height = player.height || 160;
+            
+            if (currentX + width > startX + containerWidth) {
+                currentX = startX;
+                currentY += maxHeightInRow + gap;
+                maxHeightInRow = 0;
+            }
+            
+            player.element.style.left = currentX + 'px';
+            player.element.style.top = currentY + 'px';
+            
+            currentX += width + gap;
+            maxHeightInRow = Math.max(maxHeightInRow, height);
+            
+            console.log(`VideoSystem: 视频${index + 1} - 宽:${Math.round(width)}, 高:${Math.round(height)}, 位置:(${Math.round(currentX - width - gap)}, ${Math.round(currentY)})`);
+        });
+        
+        console.log('VideoSystem: 视频排列完成，共', this.videoPlayers.length, '个视频');
+    },
+    
+    setGridColumns(columns) {
+        this.gridColumns = Math.max(1, Math.min(10, columns));
+        console.log('VideoSystem: 设置网格列数:', this.gridColumns);
+        
+        if (this.gridMode) {
+            this.arrangeInGrid();
+        }
+    },
+    
+    reArrangeAll() {
+        console.log('VideoSystem: 重新排列所有视频');
+        this.arrangeInGrid();
+    },
+    
+    cleanup() {
+        this.objectUrls.forEach(url => {
+            URL.revokeObjectURL(url);
+        });
+        this.objectUrls = [];
+        this.clearAllPlayers();
+        
+        if (this.intersectionObserver) {
+            this.intersectionObserver.disconnect();
+            this.intersectionObserver = null;
+        }
+    },
+    
+    initLazyLoading() {
+        if (!('IntersectionObserver' in window)) {
+            console.log('VideoSystem: 浏览器不支持IntersectionObserver，禁用懒加载');
+            this.lazyLoadEnabled = false;
+            return;
+        }
+        
+        this.intersectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const playerId = entry.target.id;
+                const player = this.videoPlayers.find(p => p.id === playerId);
+                
+                if (!player) return;
+                
+                console.log('VideoSystem: 视频可见性变化:', playerId, entry.isIntersecting);
+                
+                if (entry.isIntersecting) {
+                    this.loadVideo(player);
+                } else {
+                    this.unloadVideo(player);
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '200px',
+            threshold: 0.01
+        });
+        
+        console.log('VideoSystem: 懒加载已初始化');
+    },
+    
+    observeVideo(player) {
+        if (!this.lazyLoadEnabled || !this.intersectionObserver) return;
+        
+        this.intersectionObserver.observe(player.element);
+        console.log('VideoSystem: 开始观察视频:', player.id);
+    },
+    
+    unobserveVideo(player) {
+        if (!this.lazyLoadEnabled || !this.intersectionObserver) return;
+        
+        this.intersectionObserver.unobserve(player.element);
+        console.log('VideoSystem: 停止观察视频:', player.id);
+    },
+    
+    loadVideo(player) {
+        if (this.loadedVideos.has(player.id)) return;
+        
+        const videoUrl = player.video.dataset.src;
+        if (!videoUrl) {
+            console.error('VideoSystem: 视频URL为空', player.id);
+            return;
+        }
+        
+        console.log('VideoSystem: 开始加载视频:', player.id, videoUrl);
+        player.video.src = videoUrl;
+        this.loadedVideos.add(player.id);
+        
+        player.video.addEventListener('error', (e) => {
+            console.error('VideoSystem: 视频加载失败:', player.id, e);
+            if (player.loadingIndicator) {
+                const loadingText = player.loadingIndicator.querySelector('.loading-text');
+                if (loadingText) loadingText.textContent = '加载失败';
+            }
+        }, { once: true });
+    },
+    
+    unloadVideo(player) {
+        if (!this.loadedVideos.has(player.id)) return;
+        
+        if (player.isPlaying) {
+            player.video.pause();
+            player.isPlaying = false;
+        }
+        
+        player.video.removeAttribute('src');
+        player.video.load();
+        this.loadedVideos.delete(player.id);
+        console.log('VideoSystem: 卸载视频:', player.id);
+    },
+    
+    toggleLazyLoading() {
+        this.lazyLoadEnabled = !this.lazyLoadEnabled;
+        console.log('VideoSystem: 懒加载:', this.lazyLoadEnabled);
+        
+        if (!this.lazyLoadEnabled) {
+            this.videoPlayers.forEach(player => {
+                this.unobserveVideo(player);
+                this.loadVideo(player);
+            });
+        } else {
+            this.videoPlayers.forEach(player => {
+                this.observeVideo(player);
+            });
+        }
+        
+        return this.lazyLoadEnabled;
     }
 };
 
@@ -7605,6 +8529,29 @@ const imageHandler = window.imageHandler = {
     startDragImageX: 0,
     startDragImageY: 0,
     
+    // 多图片拖放时的偏移计数器
+    dropOffsetIndex: 0,
+    
+    // 拖放排列配置
+    dropLayout: {
+        currentX: 0,
+        currentY: 0,
+        rowHeight: 0,
+        maxRowWidth: 3000,
+        gap: 20
+    },
+    
+    // 懒加载相关
+    renderedImages: new Set(),
+    lazyCheckTimer: null,
+    viewportPadding: 200,
+    
+    // 缩略图和缓存相关
+    thumbnailSize: 200,
+    imageCache: new Map(),
+    maxCacheSize: 50,
+    thumbnailCache: new Map(),
+    
 
     // 检查是否处于绘画模式
     // 添加缺少的方法
@@ -7625,6 +8572,173 @@ const imageHandler = window.imageHandler = {
         this.setupMouseTracking();
         this.setupImageEditorEvents();
         this.setupResizeEvents();
+        this.setupLazyLoading();
+    },
+    
+    // 设置懒加载
+    setupLazyLoading() {
+        const container = document.getElementById('container');
+        const viewport = document.getElementById('viewport');
+        
+        // 监听滚动和缩放变化
+        viewport.addEventListener('scroll', () => this.scheduleLazyCheck());
+        container.addEventListener('wheel', () => this.scheduleLazyCheck());
+        
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => this.scheduleLazyCheck());
+        
+        // 初始检查
+        setTimeout(() => this.checkVisibleImages(), 100);
+    },
+    
+    // 延迟检查（防抖）
+    scheduleLazyCheck() {
+        if (this.lazyCheckTimer) {
+            clearTimeout(this.lazyCheckTimer);
+        }
+        this.lazyCheckTimer = setTimeout(() => {
+            this.checkVisibleImages();
+        }, 100);
+    },
+    
+    // 检查并渲染可见的图片
+    checkVisibleImages() {
+        const viewport = document.getElementById('viewport');
+        const container = document.getElementById('container');
+        
+        if (!viewport || !container || !window.app) return;
+        
+        const viewportRect = viewport.getBoundingClientRect();
+        const zoom = app.zoom || 1;
+        const scrollX = viewport.scrollLeft;
+        const scrollY = viewport.scrollTop;
+        
+        // 计算可视区域（带padding）
+        const visibleLeft = scrollX / zoom - this.viewportPadding;
+        const visibleTop = scrollY / zoom - this.viewportPadding;
+        const visibleRight = visibleLeft + (viewportRect.width / zoom) + this.viewportPadding * 2;
+        const visibleBottom = visibleTop + (viewportRect.height / zoom) + this.viewportPadding * 2;
+        
+        let newRendered = 0;
+        
+        // 检查每张图片是否在可视区域
+        this.images.forEach(image => {
+            const imageId = image.id;
+            
+            // 检查是否已渲染
+            if (this.renderedImages.has(imageId)) return;
+            
+            // 检查是否在可视区域内
+            const imageRight = image.x + image.width;
+            const imageBottom = image.y + image.height;
+            
+            if (image.x < visibleRight && imageRight > visibleLeft &&
+                image.y < visibleBottom && imageBottom > visibleTop) {
+                // 在可视区域内，渲染图片
+                this.renderImage(image);
+                this.renderedImages.add(imageId);
+                newRendered++;
+            }
+        });
+        
+        // 如果有新渲染的图片，检查是否需要清理不可见的
+        if (newRendered > 0 && this.renderedImages.size > 30) {
+            this.cleanupInvisibleImages();
+        }
+    },
+    
+    // 生成缩略图
+    generateThumbnail(src, maxSize) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxSize || height > maxSize) {
+                    const ratio = Math.min(maxSize / width, maxSize / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+    },
+    
+    // 获取或创建缩略图
+    async getThumbnail(image) {
+        const cacheKey = image.id;
+        
+        if (this.thumbnailCache.has(cacheKey)) {
+            return this.thumbnailCache.get(cacheKey);
+        }
+        
+        const thumbnail = await this.generateThumbnail(image.src, this.thumbnailSize);
+        if (thumbnail) {
+            this.thumbnailCache.set(cacheKey, thumbnail);
+            this.manageCache();
+        }
+        
+        return thumbnail;
+    },
+    
+    // 管理缓存大小
+    manageCache() {
+        if (this.thumbnailCache.size > this.maxCacheSize) {
+            const firstKey = this.thumbnailCache.keys().next().value;
+            this.thumbnailCache.delete(firstKey);
+        }
+    },
+    
+    // 清理不可见图片的DOM（释放内存）
+    cleanupInvisibleImages() {
+        const viewport = document.getElementById('viewport');
+        if (!viewport || !window.app) return;
+        
+        const viewportRect = viewport.getBoundingClientRect();
+        const zoom = app.zoom || 1;
+        const scrollX = viewport.scrollLeft;
+        const scrollY = viewport.scrollTop;
+        
+        const visibleLeft = scrollX / zoom - this.viewportPadding * 2;
+        const visibleTop = scrollY / zoom - this.viewportPadding * 2;
+        const visibleRight = visibleLeft + (viewportRect.width / zoom) + this.viewportPadding * 4;
+        const visibleBottom = visibleTop + (viewportRect.height / zoom) + this.viewportPadding * 4;
+        
+        this.images.forEach(image => {
+            const imageRight = image.x + image.width;
+            const imageBottom = image.y + image.height;
+            
+            const isVisible = image.x < visibleRight && imageRight > visibleLeft &&
+                              image.y < visibleBottom && imageBottom > visibleTop;
+            
+            const element = document.getElementById(`image-${image.id}`);
+            
+            if (!isVisible && element) {
+                element.remove();
+                this.renderedImages.delete(image.id);
+            }
+        });
+    },
+    
+    // 强制渲染所有图片（用于保存等场景）
+    renderAllImages() {
+        this.images.forEach(image => {
+            if (!this.renderedImages.has(image.id)) {
+                this.renderImage(image);
+                this.renderedImages.add(image.id);
+            }
+        });
     },
 
     // 设置调整大小事件
@@ -7841,11 +8955,18 @@ const imageHandler = window.imageHandler = {
             viewport.classList.remove('drag-over');
 
             const files = e.dataTransfer.files;
+            // 筛选出图片文件
+            const imageFiles = [];
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 if (file.type.startsWith('image/') || file.name.toLowerCase().match(/\.(png|jpg|jpeg|gif|webp|svg)$/i)) {
-                    this.handleImageFile(file, e);
+                    imageFiles.push(file);
                 }
+            }
+            
+            // 如果有多个图片，使用智能排列
+            if (imageFiles.length > 0) {
+                this.handleMultipleImageDrop(imageFiles, e);
             }
         });
     },
@@ -7892,7 +9013,102 @@ const imageHandler = window.imageHandler = {
         this.addImage(imageData, x, y);
     },
 
-    // 处理图片文件（拖拽用）
+    // 处理多个图片拖放（智能排列）
+    handleMultipleImageDrop(files, e) {
+        const rect = document.getElementById('container').getBoundingClientRect();
+        const startX = (e.clientX - rect.left) / app.zoom;
+        const startY = (e.clientY - rect.top) / app.zoom;
+        
+        // 收集所有图片数据和尺寸
+        const imageInfos = [];
+        let loadedCount = 0;
+        const totalFiles = files.length;
+        
+        files.forEach((file, index) => {
+            // 使用 createImageBitmap 直接从文件获取尺寸（更高效）
+            createImageBitmap(file).then(bitmap => {
+                // 保持原始尺寸，不缩放
+                const width = bitmap.width;
+                const height = bitmap.height;
+                
+                // 释放 bitmap
+                bitmap.close();
+                
+                // 读取文件为 base64
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imageInfos[index] = {
+                        src: event.target.result,
+                        width: width,
+                        height: height
+                    };
+                    
+                    loadedCount++;
+                    
+                    // 所有图片都加载完成后，计算位置并添加
+                    if (loadedCount === totalFiles) {
+                        this.layoutAndAddImages(imageInfos, startX, startY);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }).catch(() => {
+                // 如果 createImageBitmap 失败，回退到传统方式
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imageData = event.target.result;
+                    const tempImg = new Image();
+                    tempImg.onload = () => {
+                        // 保持原始尺寸，不缩放
+                        const width = tempImg.width;
+                        const height = tempImg.height;
+                        
+                        imageInfos[index] = {
+                            src: imageData,
+                            width: width,
+                            height: height
+                        };
+                        
+                        loadedCount++;
+                        
+                        if (loadedCount === totalFiles) {
+                            this.layoutAndAddImages(imageInfos, startX, startY);
+                        }
+                    };
+                    tempImg.src = imageData;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    },
+    
+    // 根据图片尺寸智能排列并添加
+    layoutAndAddImages(imageInfos, startX, startY) {
+        const gap = this.dropLayout.gap;
+        const maxRowWidth = this.dropLayout.maxRowWidth;
+        
+        let currentX = startX;
+        let currentY = startY;
+        let rowHeight = 0;
+        
+        imageInfos.forEach((info) => {
+            // 检查当前行是否放得下
+            if (currentX + info.width > startX + maxRowWidth && currentX > startX) {
+                // 换行
+                currentX = startX;
+                currentY += rowHeight + gap;
+                rowHeight = 0;
+            }
+            
+            // 添加图片，传递预计算的尺寸
+            this.addImage(info.src, currentX, currentY, info.width, info.height);
+            
+            // 更新位置
+            currentX += info.width + gap;
+            rowHeight = Math.max(rowHeight, info.height);
+        });
+    },
+
+    // 处理图片文件（拖拽用）- 单个图片
     handleImageFile(file, e) {
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -7907,48 +9123,34 @@ const imageHandler = window.imageHandler = {
     },
 
     // 添加图片到画布
-    addImage(src, x, y) {
-        // 创建图片ID
-        const imageId = Date.now();
+    // preWidth, preHeight: 可选的预计算尺寸，避免重复加载图片
+    addImage(src, x, y, preWidth, preHeight) {
+        // 创建图片ID（使用时间戳+随机数避免冲突）
+        const imageId = Date.now() + Math.random().toString(36).substr(2, 9);
         
-        // 创建临时图片对象获取实际尺寸
-        const tempImg = new Image();
-        tempImg.onload = () => {
-            // 使用图片实际尺寸，或者设置最大尺寸
-            const maxWidth = 300;
-            const maxHeight = 300;
-            let width = tempImg.width;
-            let height = tempImg.height;
-
-            // 按比例缩小到大尺寸
-            if (width > maxWidth || height > maxHeight) {
-                const ratio = Math.min(maxWidth / width, maxHeight / height);
-                width = Math.round(width * ratio);
-                height = Math.round(height * ratio);
-            }
-
+        // 如果有预计算的尺寸，直接使用
+        if (preWidth && preHeight) {
             const image = {
                 id: imageId,
                 src: src,
-                originalSrc: src, // 保存原始图片数据
+                originalSrc: src,
                 x: x,
                 y: y,
-                width: width,
-                height: height,
-                originalWidth: width, // 记录原始宽度
-                originalHeight: height, // 记录原始高度
-                rotation: 0, // 添加旋转属性
-                flipHorizontal: false, // 水平翻转状态
-                flipVertical: false, // 垂直翻转状态
-                // 调色参数，默认值为0，范围-100到100
+                width: preWidth,
+                height: preHeight,
+                originalWidth: preWidth,
+                originalHeight: preHeight,
+                rotation: 0,
+                flipHorizontal: false,
+                flipVertical: false,
                 colorParams: {
-                    vividness: 0,      // 鲜明度
-                    exposure: 0,       // 曝光
-                    highlight: 0,      // 高光
-                    shadow: 0,         // 阴影
-                    brightness: 0,     // 亮度
-                    contrast: 0,       // 对比度
-                    blackPoint: 0      // 黑点
+                    vividness: 0,
+                    exposure: 0,
+                    highlight: 0,
+                    shadow: 0,
+                    brightness: 0,
+                    contrast: 0,
+                    blackPoint: 0
                 },
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
@@ -7956,6 +9158,7 @@ const imageHandler = window.imageHandler = {
 
             this.images.push(image);
             this.renderImage(image);
+            this.renderedImages.add(imageId);
             this.saveImages();
             
             // 播放创建图片音效
@@ -7965,14 +9168,64 @@ const imageHandler = window.imageHandler = {
             
             // 在图片位置生成创建特效
             if (window.FXManager && FXManager.spawn) {
+                const screenPos = app.toScreen(x + preWidth/2, y + preHeight/2);
+                FXManager.spawn(screenPos.x, screenPos.y, '#00ffff', 20);
+                FXManager.spawnExplosion(screenPos.x, screenPos.y, '#00ffff', 10);
+            }
+            
+            return imageId;
+        }
+        
+        // 没有预计算尺寸，需要加载图片获取尺寸
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            // 保持原始尺寸，不缩放
+            const width = tempImg.width;
+            const height = tempImg.height;
+
+            const image = {
+                id: imageId,
+                src: src,
+                originalSrc: src,
+                x: x,
+                y: y,
+                width: width,
+                height: height,
+                originalWidth: width,
+                originalHeight: height,
+                rotation: 0,
+                flipHorizontal: false,
+                flipVertical: false,
+                colorParams: {
+                    vividness: 0,
+                    exposure: 0,
+                    highlight: 0,
+                    shadow: 0,
+                    brightness: 0,
+                    contrast: 0,
+                    blackPoint: 0
+                },
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            this.images.push(image);
+            this.renderImage(image);
+            this.renderedImages.add(imageId);
+            this.saveImages();
+            
+            if (window.AudioSystem && AudioSystem.playCreateSound) {
+                AudioSystem.playCreateSound();
+            }
+            
+            if (window.FXManager && FXManager.spawn) {
                 const screenPos = app.toScreen(x + width/2, y + height/2);
-                FXManager.spawn(screenPos.x, screenPos.y, '#00ffff', 20); // 青色特效
-                FXManager.spawnExplosion(screenPos.x, screenPos.y, '#00ffff', 10); // 爆炸特效
+                FXManager.spawn(screenPos.x, screenPos.y, '#00ffff', 20);
+                FXManager.spawnExplosion(screenPos.x, screenPos.y, '#00ffff', 10);
             }
         };
         tempImg.src = src;
         
-        // 返回图片ID
         return imageId;
     },
 
@@ -8026,11 +9279,9 @@ const imageHandler = window.imageHandler = {
                         image.originalSrc = image.src;
                     }
                 });
-                // 只在StorageSystem未初始化时才渲染图片
+                // 使用懒加载，只渲染可视区域内的图片
                 if (!window.StorageSystem || !StorageSystem.app) {
-                    this.images.forEach(image => {
-                        this.renderImage(image);
-                    });
+                    this.checkVisibleImages();
                 }
             }
         } catch (error) {
@@ -8630,6 +9881,9 @@ const imageHandler = window.imageHandler = {
         if (index > -1) {
             this.images.splice(index, 1);
         }
+        
+        // 从已渲染集合中移除
+        this.renderedImages.delete(imageId);
 
         // 从DOM中删除
         if (imgElement) {
@@ -14268,6 +15522,10 @@ const CutImgSystem = {
             </div>
             <div class="controls" id="combineControls" style="display:none;">
                 <input type="file" id="combineFiles" accept="image/*" multiple>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="cropTransparentCheckbox" checked>
+                    <label for="cropTransparentCheckbox">裁剪透明区域</label>
+                </div>
                 <button class="btn" onclick="CutImgSystem.generateSprite()">一统天下</button>
                 <button class="btn" onclick="CutImgSystem.downloadSprite()" id="spriteDownloadBtn" disabled>下载全家福</button>
             </div>
@@ -14397,29 +15655,38 @@ const CutImgSystem = {
                 tctx.drawImage(img, 0, 0);
                 const data = tctx.getImageData(0, 0, img.width, img.height).data;
 
-                let minX = img.width, maxX = 0, minY = img.height, maxY = 0;
+                let cropMinX = img.width, cropMaxX = 0, cropMinY = img.height, cropMaxY = 0;
                 let hasPixel = false;
                 for (let y = 0; y < img.height; y++) {
                     for (let x = 0; x < img.width; x++) {
                         if (data[(y * img.width + x) * 4 + 3] > 0) {
                             hasPixel = true;
-                            minX = Math.min(minX, x);
-                            maxX = Math.max(maxX, x);
-                            minY = Math.min(minY, y);
-                            maxY = Math.max(maxY, y);
+                            cropMinX = Math.min(cropMinX, x);
+                            cropMaxX = Math.max(cropMaxX, x);
+                            cropMinY = Math.min(cropMinY, y);
+                            cropMaxY = Math.max(cropMaxY, y);
                         }
                     }
                 }
 
-                const contentW = hasPixel ? maxX - minX + 1 : 1;
-                const contentH = hasPixel ? maxY - minY + 1 : 1;
+                const cropW = hasPixel ? cropMaxX - cropMinX + 1 : 1;
+                const cropH = hasPixel ? cropMaxY - cropMinY + 1 : 1;
 
                 const div = document.createElement('div');
                 div.className = 'combine-item';
-                div.innerHTML = `<img src="${img.src}"><p>${file.name}<br>有效区域: ${contentW}×${contentH}</p>`;
+                div.innerHTML = `<img src="${img.src}"><p>${file.name}<br>原图: ${img.width}×${img.height}<br>有效区域: ${cropW}×${cropH}</p>`;
                 document.getElementById('combinePreview').appendChild(div);
 
-                this.combineItems.push({img, minX, minY, contentW, contentH, fileName: file.name});
+                this.combineItems.push({
+                    img,
+                    cropMinX,
+                    cropMinY,
+                    cropW,
+                    cropH,
+                    originalW: img.width,
+                    originalH: img.height,
+                    fileName: file.name
+                });
             }
         });
 
@@ -14886,67 +16153,170 @@ const CutImgSystem = {
         const SPACING = 10;
         const MARGIN = 20;
 
-        this.combineItems.sort((a, b) => b.contentH * b.contentW - a.contentH * a.contentW);
+        const cropTransparent = document.getElementById('cropTransparentCheckbox').checked;
 
-        const totalArea = this.combineItems.reduce((sum, it) => sum + it.contentW * it.contentH, 0);
-        const avgRatio = this.combineItems.reduce((sum, it) => sum + it.contentW / it.contentH, 0) / this.combineItems.length || 1;
-        const idealWidth = Math.sqrt(totalArea * avgRatio) * 1.2;
-
-        let rows = [];
-        let remaining = [...this.combineItems];
-
-        while (remaining.length > 0) {
-            let row = [];
-            let rowW = 0;
-            let i = 0;
-            while (i < remaining.length) {
-                const item = remaining[i];
-                const addedW = item.contentW + (row.length > 0 ? SPACING : 0);
-                if (rowW + addedW > idealWidth && row.length > 0) break;
-                row.push(item);
-                rowW += addedW;
-                i++;
+        const processedItems = this.combineItems.map(it => {
+            if (cropTransparent) {
+                return {
+                    img: it.img,
+                    minX: it.cropMinX,
+                    minY: it.cropMinY,
+                    contentW: it.cropW,
+                    contentH: it.cropH
+                };
+            } else {
+                return {
+                    img: it.img,
+                    minX: 0,
+                    minY: 0,
+                    contentW: it.originalW,
+                    contentH: it.originalH
+                };
             }
-            if (row.length === 0 && remaining.length > 0) {
-                row.push(remaining[0]);
-                i = 1;
+        });
+
+        let wideCount = 0;
+        let tallCount = 0;
+        processedItems.forEach(it => {
+            if (it.contentW > it.contentH) {
+                wideCount++;
+            } else {
+                tallCount++;
             }
-            rows.push(row);
-            remaining.splice(0, i);
-        }
+        });
 
-        let maxRowW = 0;
-        let totalH = MARGIN * 2;
-        for (let row of rows) {
-            const rowH = Math.max(...row.map(it => it.contentH), 0);
-            totalH += rowH + (totalH > MARGIN * 2 ? SPACING : 0);
-            const rowW = row.reduce((sum, it, idx) => sum + it.contentW + (idx > 0 ? SPACING : 0), 0);
-            maxRowW = Math.max(maxRowW, rowW);
-        }
-        const totalW = maxRowW + MARGIN * 2;
+        const useVerticalLayout = wideCount > tallCount;
 
-        const canvas = document.getElementById('spriteCanvas');
-        canvas.width = totalW;
-        canvas.height = totalH;
-        const sctx = canvas.getContext('2d');
-        sctx.clearRect(0, 0, totalW, totalH);
+        processedItems.sort((a, b) => {
+            if (useVerticalLayout) {
+                return b.contentW - a.contentW;
+            }
+            return b.contentH * b.contentW - a.contentH * a.contentW;
+        });
 
-        let y = MARGIN;
-        for (let row of rows) {
-            const rowH = Math.max(...row.map(it => it.contentH), 0);
+        const totalArea = processedItems.reduce((sum, it) => sum + it.contentW * it.contentH, 0);
+
+        let canvas, sctx, totalW, totalH;
+
+        if (useVerticalLayout) {
+            const avgRatio = processedItems.reduce((sum, it) => sum + it.contentH / it.contentW, 0) / processedItems.length || 1;
+            const idealHeight = Math.sqrt(totalArea / avgRatio) * 1.2;
+
+            let cols = [];
+            let remaining = [...processedItems];
+
+            while (remaining.length > 0) {
+                let col = [];
+                let colH = 0;
+                let i = 0;
+                while (i < remaining.length) {
+                    const item = remaining[i];
+                    const addedH = item.contentH + (col.length > 0 ? SPACING : 0);
+                    if (colH + addedH > idealHeight && col.length > 0) break;
+                    col.push(item);
+                    colH += addedH;
+                    i++;
+                }
+                if (col.length === 0 && remaining.length > 0) {
+                    col.push(remaining[0]);
+                    i = 1;
+                }
+                cols.push(col);
+                remaining.splice(0, i);
+            }
+
+            let maxColH = 0;
+            totalW = MARGIN * 2;
+            for (let col of cols) {
+                const colW = Math.max(...col.map(it => it.contentW), 0);
+                totalW += colW + (totalW > MARGIN * 2 ? SPACING : 0);
+                const colH = col.reduce((sum, it, idx) => sum + it.contentH + (idx > 0 ? SPACING : 0), 0);
+                maxColH = Math.max(maxColH, colH);
+            }
+            totalH = maxColH + MARGIN * 2;
+
+            canvas = document.getElementById('spriteCanvas');
+            canvas.width = totalW;
+            canvas.height = totalH;
+            sctx = canvas.getContext('2d');
+            sctx.clearRect(0, 0, totalW, totalH);
+
             let x = MARGIN;
-            for (let item of row) {
-                sctx.drawImage(item.img,
-                    item.minX, item.minY, item.contentW, item.contentH,
-                    x, y + (rowH - item.contentH) / 2,
-                    item.contentW, item.contentH
-                );
-                x += item.contentW + SPACING;
+            for (let col of cols) {
+                const colW = Math.max(...col.map(it => it.contentW), 0);
+                let y = MARGIN;
+                for (let item of col) {
+                    sctx.drawImage(item.img,
+                        item.minX, item.minY, item.contentW, item.contentH,
+                        x + (colW - item.contentW) / 2, y,
+                        item.contentW, item.contentH
+                    );
+                    y += item.contentH + SPACING;
+                }
+                x += colW + SPACING;
             }
-            y += rowH + SPACING;
+        } else {
+            const avgRatio = processedItems.reduce((sum, it) => sum + it.contentW / it.contentH, 0) / processedItems.length || 1;
+            const idealWidth = Math.sqrt(totalArea * avgRatio) * 1.2;
+
+            let rows = [];
+            let remaining = [...processedItems];
+
+            while (remaining.length > 0) {
+                let row = [];
+                let rowW = 0;
+                let i = 0;
+                while (i < remaining.length) {
+                    const item = remaining[i];
+                    const addedW = item.contentW + (row.length > 0 ? SPACING : 0);
+                    if (rowW + addedW > idealWidth && row.length > 0) break;
+                    row.push(item);
+                    rowW += addedW;
+                    i++;
+                }
+                if (row.length === 0 && remaining.length > 0) {
+                    row.push(remaining[0]);
+                    i = 1;
+                }
+                rows.push(row);
+                remaining.splice(0, i);
+            }
+
+            let maxRowW = 0;
+            totalH = MARGIN * 2;
+            for (let row of rows) {
+                const rowH = Math.max(...row.map(it => it.contentH), 0);
+                totalH += rowH + (totalH > MARGIN * 2 ? SPACING : 0);
+                const rowW = row.reduce((sum, it, idx) => sum + it.contentW + (idx > 0 ? SPACING : 0), 0);
+                maxRowW = Math.max(maxRowW, rowW);
+            }
+            totalW = maxRowW + MARGIN * 2;
+
+            canvas = document.getElementById('spriteCanvas');
+            canvas.width = totalW;
+            canvas.height = totalH;
+            sctx = canvas.getContext('2d');
+            sctx.clearRect(0, 0, totalW, totalH);
+
+            let y = MARGIN;
+            for (let row of rows) {
+                const rowH = Math.max(...row.map(it => it.contentH), 0);
+                let x = MARGIN;
+                for (let item of row) {
+                    sctx.drawImage(item.img,
+                        item.minX, item.minY, item.contentW, item.contentH,
+                        x, y + (rowH - item.contentH) / 2,
+                        item.contentW, item.contentH
+                    );
+                    x += item.contentW + SPACING;
+                }
+                y += rowH + SPACING;
+            }
         }
 
-        document.getElementById('spriteSize').textContent = `精灵图尺寸：${canvas.width} × ${canvas.height} 像素`;
+        const layoutInfo = useVerticalLayout ? '（纵向布局：宽图较多）' : '（横向布局：高图较多）';
+        const cropInfo = cropTransparent ? '已裁剪透明区域' : '原图尺寸';
+        document.getElementById('spriteSize').textContent = `精灵图尺寸：${canvas.width} × ${canvas.height} 像素 ${layoutInfo} [${cropInfo}]`;
         document.getElementById('spriteDownloadBtn').disabled = false;
     },
 
@@ -15122,6 +16492,671 @@ if (typeof document !== 'undefined') {
     });
 }
 
+
+class VideoToSpritesSystem {
+    constructor() {
+        this.frames = [];
+        this.selectedFrames = [];
+        this.frameRows = [];
+        this.isPlaying = false;
+        this.animationId = null;
+        this.currentFrameIndex = 0;
+        this.draggedItem = null;
+        this.draggedOrder = null;
+        this.frameZoom = 1;
+        this.selectedZoom = 1;
+
+        this.videoInput = null;
+        this.progressContainer = null;
+        this.progressFill = null;
+        this.framesSection = null;
+        this.framesGrid = null;
+        this.framesInfo = null;
+        this.playBtn = null;
+        this.downloadStripBtn = null;
+        this.previewSection = null;
+        this.previewCanvas = null;
+        this.previewCtx = null;
+        this.loadingOverlay = null;
+        this.loadingText = null;
+        this.hiddenVideo = null;
+        this.selectedFramesSection = null;
+        this.selectedFramesRow1 = null;
+        this.selectedFramesRow2 = null;
+        this.selectedCountBadge = null;
+        this.clearSelectionBtn = null;
+
+        this.initElements();
+        this.bindEvents();
+    }
+
+    initElements() {
+        this.videoInput = document.getElementById('videoInput');
+        this.progressContainer = document.getElementById('progressContainer');
+        this.progressFill = document.getElementById('progressFill');
+        this.framesSection = document.getElementById('framesSection');
+        this.framesGrid = document.getElementById('framesGrid');
+        this.framesInfo = document.getElementById('framesInfo');
+        this.playBtn = document.getElementById('playBtn');
+        this.downloadStripBtn = document.getElementById('downloadStripBtn');
+        this.previewSection = document.getElementById('previewSection');
+        this.previewCanvas = document.getElementById('previewCanvas');
+        if (this.previewCanvas) {
+            this.previewCtx = this.previewCanvas.getContext('2d');
+        }
+        this.loadingOverlay = document.getElementById('loadingOverlay');
+        this.loadingText = document.getElementById('loadingText');
+        this.hiddenVideo = document.getElementById('hiddenVideo');
+        this.selectedFramesSection = document.getElementById('selectedFramesSection');
+        this.selectedFramesRow1 = document.getElementById('selectedFramesRow1');
+        this.selectedFramesRow2 = document.getElementById('selectedFramesRow2');
+        this.selectedCountBadge = document.getElementById('selectedCountBadge');
+        this.clearSelectionBtn = document.getElementById('clearSelectionBtn');
+    }
+
+    bindEvents() {
+        if (this.videoInput) {
+            this.videoInput.addEventListener('change', (e) => this.handleVideoUpload(e));
+        }
+    }
+
+    showPanel() {
+        const panel = document.getElementById('video-to-sprites-panel');
+        if (panel) {
+            panel.style.display = 'block';
+        }
+    }
+
+    hidePanel() {
+        const panel = document.getElementById('video-to-sprites-panel');
+        if (panel) {
+            panel.style.display = 'none';
+        }
+    }
+
+    async handleVideoUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        this.showLoading('正在提取视频帧...');
+        
+        const url = URL.createObjectURL(file);
+        this.hiddenVideo.src = url;
+        
+        await new Promise((resolve) => {
+            this.hiddenVideo.onloadedmetadata = resolve;
+        });
+
+        this.frames = [];
+        this.selectedFrames = [];
+        this.frameRows = [];
+        
+        const duration = this.hiddenVideo.duration;
+        const fps = 10;
+        const totalFrames = Math.floor(duration * fps);
+        const frameInterval = 1 / fps;
+
+        this.progressContainer.style.display = 'block';
+
+        for (let i = 0; i < totalFrames; i++) {
+            const time = i * frameInterval;
+            const frame = await this.captureFrame(time, i);
+            this.frames.push(frame);
+            
+            const progress = Math.round(((i + 1) / totalFrames) * 100);
+            this.progressFill.style.width = `${progress}%`;
+            this.progressFill.textContent = `${progress}%`;
+        }
+
+        this.progressContainer.style.display = 'none';
+        this.hideLoading();
+        this.renderFrames();
+        this.framesSection.style.display = 'block';
+    }
+
+    captureFrame(time, index) {
+        return new Promise((resolve) => {
+            this.hiddenVideo.currentTime = time;
+            
+            this.hiddenVideo.onseeked = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = this.hiddenVideo.videoWidth;
+                canvas.height = this.hiddenVideo.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(this.hiddenVideo, 0, 0);
+                
+                resolve({
+                    index: index,
+                    dataUrl: canvas.toDataURL('image/png'),
+                    width: canvas.width,
+                    height: canvas.height,
+                    canvas: canvas
+                });
+            };
+        });
+    }
+
+    renderFrames() {
+        this.framesGrid.innerHTML = '';
+        
+        this.frames.forEach((frame, index) => {
+            const frameItem = document.createElement('div');
+            frameItem.className = 'frame-item';
+            frameItem.dataset.index = index;
+            
+            frameItem.innerHTML = `
+                <img src="${frame.dataUrl}" alt="Frame ${index}">
+                <div class="frame-number">${index + 1}</div>
+                <div class="play-order"></div>
+                <div class="frame-check">✓</div>
+            `;
+            
+            frameItem.addEventListener('click', () => this.toggleFrameSelection(index));
+            this.framesGrid.appendChild(frameItem);
+        });
+        
+        this.updateFramesInfo();
+    }
+
+    setFrameZoom(zoom) {
+        this.frameZoom = parseFloat(zoom);
+        document.getElementById('frameZoomValue').textContent = `${this.frameZoom}x`;
+        
+        const baseSize = 150;
+        const newSize = Math.round(baseSize * this.frameZoom);
+        this.framesGrid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${newSize}px, 1fr))`;
+    }
+
+    setSelectedZoom(zoom) {
+        this.selectedZoom = parseFloat(zoom);
+        document.getElementById('selectedZoomValue').textContent = `${this.selectedZoom}x`;
+        this.renderSelectedFrames();
+    }
+
+    toggleFrameSelection(index) {
+        const frameItem = this.framesGrid.children[index];
+        
+        if (this.selectedFrames.includes(index)) {
+            const idx = this.selectedFrames.indexOf(index);
+            this.selectedFrames.splice(idx, 1);
+            this.frameRows.splice(idx, 1);
+            frameItem.classList.remove('selected');
+            
+            if (this.selectedFrames.length === 0) {
+                this.stopPreview();
+                this.previewSection.style.display = 'none';
+            }
+        } else {
+            this.selectedFrames.push(index);
+            this.frameRows.push(1);
+            frameItem.classList.add('selected');
+        }
+        
+        this.updatePlayOrder();
+        this.updateFramesInfo();
+        this.updateButtons();
+        this.renderSelectedFrames();
+    }
+
+    renderSelectedFrames() {
+        if (this.selectedFrames.length === 0) {
+            this.selectedFramesSection.style.display = 'none';
+            this.clearSelectionBtn.style.display = 'none';
+            return;
+        }
+        
+        this.selectedFramesSection.style.display = 'block';
+        this.clearSelectionBtn.style.display = 'inline-flex';
+        this.selectedCountBadge.textContent = `${this.selectedFrames.length} 帧`;
+        
+        this.selectedFramesRow1.innerHTML = '';
+        this.selectedFramesRow2.innerHTML = '';
+        
+        const row1Frames = [];
+        const row2Frames = [];
+        
+        this.selectedFrames.forEach((frameIndex, order) => {
+            const frame = this.frames[frameIndex];
+            const item = document.createElement('div');
+            item.className = 'selected-frame-item';
+            item.draggable = true;
+            item.dataset.order = order;
+            item.dataset.row = this.frameRows[order] || 1;
+            
+            const baseSize = 80;
+            const size = Math.round(baseSize * this.selectedZoom);
+            item.style.width = `${size}px`;
+            item.style.height = `${size}px`;
+            
+            const row = this.frameRows[order] || 1;
+            const rowOrder = row === 1 ? row1Frames.length + 1 : row2Frames.length + 1;
+            
+            item.innerHTML = `
+                <img src="${frame.dataUrl}" alt="Frame ${frameIndex}" draggable="false">
+                <div class="selected-frame-order">${order + 1}</div>
+                <div class="selected-frame-remove" onclick="VideoToSpritesSystem.removeSelectedFrame(${frameIndex})">&times;</div>
+            `;
+            
+            item.addEventListener('dragstart', (e) => this.handleDragStart(e));
+            item.addEventListener('dragend', (e) => this.handleDragEnd(e));
+            item.addEventListener('dragover', (e) => this.handleDragOver(e));
+            item.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+            item.addEventListener('drop', (e) => this.handleDrop(e));
+            
+            if (row === 1) {
+                this.selectedFramesRow1.appendChild(item);
+                row1Frames.push({ order, frameIndex });
+            } else {
+                this.selectedFramesRow2.appendChild(item);
+                row2Frames.push({ order, frameIndex });
+            }
+        });
+        
+        this.setupRowDropZones();
+    }
+
+    setupRowDropZones() {
+        const rows = [
+            { el: this.selectedFramesRow1, row: 1 },
+            { el: this.selectedFramesRow2, row: 2 }
+        ];
+        
+        rows.forEach(({ el, row }) => {
+            el.ondragover = (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                el.classList.add('drag-over');
+            };
+            el.ondragleave = (e) => {
+                el.classList.remove('drag-over');
+            };
+            el.ondrop = (e) => {
+                e.preventDefault();
+                el.classList.remove('drag-over');
+                if (this.draggedOrder !== null && e.target === el) {
+                    this.frameRows[this.draggedOrder] = row;
+                    this.renderSelectedFrames();
+                }
+            };
+        });
+    }
+
+    handleDragStart(e) {
+        this.draggedItem = e.currentTarget;
+        this.draggedOrder = parseInt(this.draggedItem.dataset.order);
+        this.draggedItem.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', this.draggedOrder);
+    }
+
+    handleDragEnd(e) {
+        e.currentTarget.classList.remove('dragging');
+        document.querySelectorAll('.selected-frame-item').forEach(item => {
+            item.classList.remove('drag-over');
+        });
+        this.selectedFramesRow1.classList.remove('drag-over');
+        this.selectedFramesRow2.classList.remove('drag-over');
+        this.draggedItem = null;
+        this.draggedOrder = null;
+    }
+
+    handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (e.currentTarget !== this.draggedItem) {
+            e.currentTarget.classList.add('drag-over');
+        }
+    }
+
+    handleDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('drag-over');
+        
+        if (e.currentTarget === this.draggedItem) return;
+        
+        const targetOrder = parseInt(e.currentTarget.dataset.order);
+        const draggedRow = this.frameRows[this.draggedOrder];
+        const targetRow = this.frameRows[targetOrder];
+        
+        if (draggedRow === targetRow) {
+            const draggedFrameIndex = this.selectedFrames[this.draggedOrder];
+            const draggedFrameRow = this.frameRows[this.draggedOrder];
+            
+            this.selectedFrames.splice(this.draggedOrder, 1);
+            this.frameRows.splice(this.draggedOrder, 1);
+            
+            const newTargetOrder = targetOrder > this.draggedOrder ? targetOrder - 1 : targetOrder;
+            this.selectedFrames.splice(newTargetOrder, 0, draggedFrameIndex);
+            this.frameRows.splice(newTargetOrder, 0, draggedFrameRow);
+            
+            this.updatePlayOrder();
+            this.renderSelectedFrames();
+        } else {
+            this.frameRows[this.draggedOrder] = targetRow;
+            this.renderSelectedFrames();
+        }
+    }
+
+    static removeSelectedFrame(index) {
+        VideoToSpritesSystem.instance.toggleFrameSelection(index);
+    }
+
+    clearSelection() {
+        this.stopPreview();
+        this.previewSection.style.display = 'none';
+        
+        this.selectedFrames.forEach(frameIndex => {
+            const frameItem = this.framesGrid.children[frameIndex];
+            if (frameItem) {
+                frameItem.classList.remove('selected');
+            }
+        });
+        this.selectedFrames = [];
+        this.frameRows = [];
+        this.updatePlayOrder();
+        this.updateFramesInfo();
+        this.updateButtons();
+        this.renderSelectedFrames();
+    }
+
+    stopPreview() {
+        if (this.isPlaying) {
+            this.isPlaying = false;
+            if (this.animationId) {
+                clearInterval(this.animationId);
+                this.animationId = null;
+            }
+        }
+    }
+
+    updatePlayOrder() {
+        this.selectedFrames.forEach((frameIndex, order) => {
+            const frameItem = this.framesGrid.children[frameIndex];
+            const playOrderEl = frameItem.querySelector('.play-order');
+            playOrderEl.textContent = order + 1;
+        });
+    }
+
+    toggleSelectAll() {
+        const allSelected = this.selectedFrames.length === this.frames.length;
+        
+        if (allSelected) {
+            this.selectedFrames = [];
+            this.frameRows = [];
+            Array.from(this.framesGrid.children).forEach(item => {
+                item.classList.remove('selected');
+            });
+        } else {
+            this.selectedFrames = this.frames.map((_, index) => index);
+            this.frameRows = this.frames.map(() => 1);
+            Array.from(this.framesGrid.children).forEach(item => {
+                item.classList.add('selected');
+            });
+        }
+        
+        this.updatePlayOrder();
+        this.updateFramesInfo();
+        this.updateButtons();
+        this.renderSelectedFrames();
+    }
+
+    updateFramesInfo() {
+        this.framesInfo.textContent = `共 ${this.frames.length} 帧，已选择 ${this.selectedFrames.length} 帧`;
+    }
+
+    updateButtons() {
+        const hasSelection = this.selectedFrames.length > 0;
+        this.playBtn.disabled = !hasSelection;
+        this.downloadStripBtn.disabled = !hasSelection;
+    }
+
+    playSelectedFrames() {
+        if (this.selectedFrames.length === 0) return;
+        
+        this.stopPreview();
+        
+        this.previewSection.style.display = 'block';
+        this.previewSection.scrollIntoView({ behavior: 'smooth' });
+        
+        const firstFrame = this.frames[this.selectedFrames[0]];
+        this.previewCanvas.width = firstFrame.width;
+        this.previewCanvas.height = firstFrame.height;
+        
+        this.isPlaying = true;
+        this.currentFrameIndex = 0;
+        
+        const playOrder = [];
+        for (let i = 0; i < this.selectedFrames.length; i++) {
+            if (this.frameRows[i] === 1) {
+                playOrder.push(i);
+            }
+        }
+        for (let i = 0; i < this.selectedFrames.length; i++) {
+            if (this.frameRows[i] === 2) {
+                playOrder.push(i);
+            }
+        }
+        
+        const loadedImages = [];
+        for (let i = 0; i < playOrder.length; i++) {
+            const img = new Image();
+            img.src = this.frames[this.selectedFrames[playOrder[i]]].dataUrl;
+            loadedImages.push(img);
+        }
+        
+        const fps = 10;
+        const frameDelay = 1000 / fps;
+        
+        const renderFrame = () => {
+            if (!this.isPlaying) return;
+            
+            const img = loadedImages[this.currentFrameIndex];
+            if (img.complete) {
+                this.previewCtx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+                this.previewCtx.drawImage(img, 0, 0);
+            }
+            
+            this.currentFrameIndex = (this.currentFrameIndex + 1) % playOrder.length;
+        };
+        
+        renderFrame();
+        
+        this.animationId = setInterval(renderFrame, frameDelay);
+    }
+
+    getMattingMode() {
+        const checkbox = document.getElementById('mattingMode');
+        return checkbox && checkbox.checked ? 'matting' : 'original';
+    }
+
+    async downloadStrip() {
+        if (this.selectedFrames.length === 0) return;
+        
+        const mattingMode = this.getMattingMode();
+        const isMatting = mattingMode === 'matting';
+        
+        this.showLoading(isMatting ? '正在处理图像...' : '正在生成序列图...');
+        
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const playOrder = [];
+        for (let i = 0; i < this.selectedFrames.length; i++) {
+            if (this.frameRows[i] === 1) {
+                playOrder.push(i);
+            }
+        }
+        for (let i = 0; i < this.selectedFrames.length; i++) {
+            if (this.frameRows[i] === 2) {
+                playOrder.push(i);
+            }
+        }
+        
+        const processedFrames = [];
+        for (let i = 0; i < playOrder.length; i++) {
+            const frame = this.frames[this.selectedFrames[playOrder[i]]];
+            this.loadingText.textContent = isMatting 
+                ? `正在处理图像... (${i + 1}/${playOrder.length})`
+                : `正在生成序列图... (${i + 1}/${playOrder.length})`;
+            const processedCanvas = isMatting ? await this.removeBackground(frame.canvas) : frame.canvas;
+            processedFrames.push(processedCanvas);
+        }
+        
+        const firstFrame = processedFrames[0];
+        const stripCanvas = document.createElement('canvas');
+        stripCanvas.width = firstFrame.width * processedFrames.length;
+        stripCanvas.height = firstFrame.height;
+        const stripCtx = stripCanvas.getContext('2d');
+        
+        processedFrames.forEach((canvas, index) => {
+            stripCtx.drawImage(canvas, index * firstFrame.width, 0);
+        });
+        
+        this.hideLoading();
+        
+        const link = document.createElement('a');
+        link.download = 'sequence_strip.png';
+        link.href = stripCanvas.toDataURL('image/png');
+        link.click();
+    }
+
+    async removeBackground(sourceCanvas) {
+        const canvas = document.createElement('canvas');
+        canvas.width = sourceCanvas.width;
+        canvas.height = sourceCanvas.height;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.drawImage(sourceCanvas, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        const bgColor = this.detectBackgroundColor(data, canvas.width, canvas.height);
+        
+        const tolerance = 50;
+        const edgeTolerance = 30;
+        
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            const colorDistance = Math.sqrt(
+                Math.pow(r - bgColor.r, 2) +
+                Math.pow(g - bgColor.g, 2) +
+                Math.pow(b - bgColor.b, 2)
+            );
+            
+            if (colorDistance < tolerance) {
+                data[i + 3] = 0;
+            } else if (colorDistance < tolerance + edgeTolerance) {
+                const alpha = Math.round(((colorDistance - tolerance) / edgeTolerance) * 255);
+                data[i + 3] = alpha;
+                
+                const blend = alpha / 255;
+                data[i] = Math.round(bgColor.r + (r - bgColor.r) * blend);
+                data[i + 1] = Math.round(bgColor.g + (g - bgColor.g) * blend);
+                data[i + 2] = Math.round(bgColor.b + (b - bgColor.b) * blend);
+            }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+        
+        return canvas;
+    }
+
+    detectBackgroundColor(data, width, height) {
+        const sampleSize = 50;
+        const colors = [];
+        
+        for (let x = 0; x < sampleSize; x++) {
+            for (let y = 0; y < sampleSize; y++) {
+                const i = (y * width + x) * 4;
+                colors.push({ r: data[i], g: data[i + 1], b: data[i + 2] });
+            }
+        }
+        
+        for (let x = width - sampleSize; x < width; x++) {
+            for (let y = 0; y < sampleSize; y++) {
+                const i = (y * width + x) * 4;
+                colors.push({ r: data[i], g: data[i + 1], b: data[i + 2] });
+            }
+        }
+        
+        for (let x = 0; x < sampleSize; x++) {
+            for (let y = height - sampleSize; y < height; y++) {
+                const i = (y * width + x) * 4;
+                colors.push({ r: data[i], g: data[i + 1], b: data[i + 2] });
+            }
+        }
+        
+        for (let x = width - sampleSize; x < width; x++) {
+            for (let y = height - sampleSize; y < height; y++) {
+                const i = (y * width + x) * 4;
+                colors.push({ r: data[i], g: data[i + 1], b: data[i + 2] });
+            }
+        }
+        
+        const avgR = Math.round(colors.reduce((sum, c) => sum + c.r, 0) / colors.length);
+        const avgG = Math.round(colors.reduce((sum, c) => sum + c.g, 0) / colors.length);
+        const avgB = Math.round(colors.reduce((sum, c) => sum + c.b, 0) / colors.length);
+        
+        return { r: avgR, g: avgG, b: avgB };
+    }
+
+    showLoading(text) {
+        this.loadingText.textContent = text;
+        this.loadingOverlay.style.display = 'flex';
+    }
+
+    hideLoading() {
+        this.loadingOverlay.style.display = 'none';
+    }
+}
+
+// 初始化系统
+VideoToSpritesSystem.instance = null;
+
+// 当DOM加载完成后初始化系统
+document.addEventListener('DOMContentLoaded', function() {
+    VideoToSpritesSystem.instance = new VideoToSpritesSystem();
+});
+
+// 为了方便调用，将方法绑定到类本身
+VideoToSpritesSystem.showPanel = function() {
+    VideoToSpritesSystem.instance.showPanel();
+};
+
+VideoToSpritesSystem.hidePanel = function() {
+    VideoToSpritesSystem.instance.hidePanel();
+};
+
+VideoToSpritesSystem.toggleSelectAll = function() {
+    VideoToSpritesSystem.instance.toggleSelectAll();
+};
+
+VideoToSpritesSystem.playSelectedFrames = function() {
+    VideoToSpritesSystem.instance.playSelectedFrames();
+};
+
+VideoToSpritesSystem.downloadStrip = function() {
+    VideoToSpritesSystem.instance.downloadStrip();
+};
+
+VideoToSpritesSystem.setFrameZoom = function(zoom) {
+    VideoToSpritesSystem.instance.setFrameZoom(zoom);
+};
+
+VideoToSpritesSystem.setSelectedZoom = function(zoom) {
+    VideoToSpritesSystem.instance.setSelectedZoom(zoom);
+};
+
+VideoToSpritesSystem.clearSelection = function() {
+    VideoToSpritesSystem.instance.clearSelection();
+};
 
 </script>
 </body>
